@@ -19,5 +19,6 @@
         "middlewares/whoops": "^1.2",
       "ext-json": "*",
       "ext-pdo": "*"
+      // INDENTATION MODAFUCKA
     }
 }

@@ -6,7 +6,11 @@ use Hypario\Middlewares\NotFoundMiddleware;
 use Hypario\Middlewares\RouterMiddleware;
 use Middlewares\Whoops;
 
+// pratique foireuse, tu risque d'exposer l'arborescence entière de ton site,
+// même dans le cas où ../ est "protégé"
 chdir(dirname(__DIR__));
+// fais un define du dossier parent, et utilise-le comme préfixe pour ton
+// require et tout le reste
 
 require 'vendor/autoload.php';
 

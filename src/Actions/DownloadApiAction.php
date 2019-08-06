@@ -37,6 +37,9 @@ class DownloadApiAction
                     $path = substr($file->path, strpos($file->path, $wanted), strlen($file->path));
                 }
 
+// jamais de shell exec quand tu peux le faire en PHP
+// jamais de passage de paramètre non-échappé dans un exec
+// c.f. https://www.php.net/manual/en/ref.exec.php
                 exec('mkdir ' . dirname($path) . ' || touch ' . $path . ' && cat ../files/' . $file->uuid . ' >> ' . $path);
             }
 
@@ -46,7 +49,8 @@ class DownloadApiAction
             } else {
                 $zipname = "{$wanted}.zip";
             }
-
+// pareil, tu peux pas dépendre de la présence de `zip` dans le path,
+// surtout si tu as PHP libzip
             //then zip the folder and remove the build
             exec("zip -r $zipname $wanted && rm -rf $wanted");
 
@@ -65,13 +69,18 @@ class DownloadApiAction
             unlink($zipname);
             return $response;
         }
+        // tu faisais une structure { Error, info }, et maintenant tu
+        // renvois seulement info ?
         return json_encode("The wanted file or directory doesn't exist");
     }
 
     public function readfile(string $file)
     {
+        // un flush dans la nature, c'pas souvent bon, t'es sûr de faire
+        // le bon traitement?
         flush();
         readfile($file);
+        // un return inutile, ça se met pas du tout
         return "";
     }
 

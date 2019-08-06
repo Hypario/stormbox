@@ -9,6 +9,7 @@ use Hypario\Database\NoRecordException;
 use Hypario\Database\Table;
 use Psr\Http\Message\ServerRequestInterface;
 
+// ça s'abstrait, surtout le constructeur
 class ApiAction
 {
 
@@ -41,10 +42,17 @@ class ApiAction
         } catch (NoRecordException $e) {
             $uuid = uniqid();
             $uploadDirectory = 'files/' . $uuid;
+            // on n'utilise jamais une exception comme control flow.
+            // ce que tu fais, là, c'est un if count else, fais-en un vrai
         }
 
         /** @var $files UploadedFile[] */
         $files = $request->getUploadedFiles();
+
+// 1. un code d'erreur 0 est par convention "tout va bien"
+// 2. tu mélange camelcase et pascalcase (E rror, i nfo)
+// 3. 3 erreurs différentes avec le même code
+// 4. tu json_encode une json str, wat ?
 
         if (empty($files) || $files['blob']->getError()) {
             return json_encode('{"Error": 0, "info": "Failed to upload file, please contact the support."}');
@@ -68,6 +76,10 @@ class ApiAction
             @fclose($out);
             $files['blob']->getStream()->close();
 
+// 1. le @, c'est à bannir
+// 2. si tu veux écrire, utilise file_put_contents avec les paramètres adaptés
+// 3. wb, et ab, ça va pas là, ça se hardcode pas
+
         }
 
         if (!isset($file) || empty($file)) {
@@ -77,6 +89,8 @@ class ApiAction
             ]);
         }
         return json_encode('{"ok": 1, "info": "Upload successful."}');
+        // ton "ok" sert strictement à rien: l'absence de Error suffit à le
+        // montrer. error: 0 permettrait de dire que ok, typiquement
     }
 
 }
