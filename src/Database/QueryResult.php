@@ -35,6 +35,19 @@ class QueryResult implements \ArrayAccess, \Iterator
         return $this->entity;
     }
 
+    public function getAll()
+    {
+        if ($this->entity) {
+            if (empty($this->hydratedRecords)) {
+                for ($i = 0; $i < count($this->records); $i++) {
+                    $this->hydratedRecords[$i] = Hydrator::hydrate($this->records[$i], $this->entity);
+                }
+            }
+            return $this->hydratedRecords;
+        }
+        return $this->records;
+    }
+
     /**
      * Return the current element
      * @link http://php.net/manual/en/iterator.current.php
