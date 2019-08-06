@@ -21,43 +21,55 @@ class DownloadApiAction
 
     public function __invoke(ServerRequestInterface $request)
     {
-        $params = $request->getParsedBody();
+        $wanted = $request->getParsedBody()['path'];
 
         $files = $this->table->makeQuery()
             ->where('f.path LIKE ?')
-            ->params([$params['path'] . '%'])
+            ->params(['%' . $wanted . '%'])
             ->fetchAll()->getAll();
 
         if (!empty($files)) {
             chdir("build");
             // foreach file, create the folders, the file, and write the content
             foreach ($files as $file) {
-                exec("mkdir " . dirname($file->path) .
-                    " && touch " . $file->path .
-                    " && cat ../files/" . $file->uuid . " >> " . $file->path
-                );
-            }
-            //then zip the folder and remove the build
-            exec("zip -r {$params['path']} {$params['path']} && rm -rf {$params['path']} && chmod -R 777 {$params['path']}.zip");
 
-            $archive = new \ZipArchive();
-            $archive->open("{$params['path']}.zip");
+                if (dirname($file->path) !== $wanted) {
+                    $path = substr($file->path, strpos($file->path, $wanted), strlen($file->path));
+                }
+
+                exec('mkdir ' . dirname($path) . ' || touch ' . $path . ' && cat ../files/' . $file->uuid . ' >> ' . $path);
+            }
+
+            // if the file have an extension, get the zipname of it
+            if (strpos($wanted, '.')) {
+                $zipname = substr($wanted, 0, strpos($wanted, '.')) . '.zip';
+            } else {
+                $zipname = "{$wanted}.zip";
+            }
+
+            //then zip the folder and remove the build
+            exec("zip -r $zipname $wanted && rm -rf $wanted");
+
+            $zip = new \ZipArchive();
+            $zip->open($zipname);
+
             $response = new Response(200, [
                 'Content-Type' => "application/zip",
-                'Content-Disposition' => "attachment; filename=" . $params['path'] . ".zip",
+                'Content-Disposition' => "attachment; filename=" . $zipname,
                 'Pragma' => "public",
                 'Expires' => '0',
-                "Content-Length" => filesize("{$params['path']}.zip")
-            ], file_get_contents($archive->filename));
+                "Content-Length" => filesize($zipname)
+            ], file_get_contents($zip->filename));
 
-            $archive->close();
-            unlink($params['path'] . '.zip');
+            $zip->close();
+            unlink($zipname);
             return $response;
         }
         return json_encode("The wanted file or directory doesn't exist");
     }
 
-    public function readfile(string $file) {
+    public function readfile(string $file)
+    {
         flush();
         readfile($file);
         return "";
