@@ -1,0 +1,23 @@
+{
+    "name": "hypario/stormbox",
+    "authors": [
+        {
+            "name": "Hypario",
+            "email": "fabienduterte@orange.fr"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Hypario\\": "src/"
+        }
+    },
+    "require": {
+        "hypario/router": "^1.3",
+        "http-interop/response-sender": "^1.0",
+        "guzzlehttp/psr7": "^1.6",
+        "php-di/php-di": "^6.0",
+        "middlewares/whoops": "^1.2",
+      "ext-json": "*",
+      "ext-pdo": "*"
+    }
+}
