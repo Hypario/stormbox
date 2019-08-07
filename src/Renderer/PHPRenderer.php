@@ -38,6 +38,9 @@ class PHPRenderer implements RendererInterface
     public function addPath(string $namespace, ?string $path = null): void
     {
         if (is_null($path)) {
+            // ici, tu fais une ref indirecte vers le namespace, tu te
+            // retrouve avec une data structure qui contient 2 données différentes
+            // avec le même type, hautement foireux donc.
             $this->paths[self::DEFAULT_NAMESPACE] = $namespace;
         } else {
             $this->paths[$namespace] = $path;
