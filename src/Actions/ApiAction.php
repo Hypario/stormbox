@@ -5,23 +5,14 @@ namespace Hypario\Actions;
 
 
 use GuzzleHttp\Psr7\UploadedFile;
+use Hypario\Actions;
 use Hypario\Database\NoRecordException;
 use Hypario\Database\Table;
 use Psr\Http\Message\ServerRequestInterface;
 
 // ça s'abstrait, surtout le constructeur
-class ApiAction
+class ApiAction extends Actions
 {
-
-    /**
-     * @var Table
-     */
-    private $table;
-
-    public function __construct(Table $table)
-    {
-        $this->table = $table;
-    }
 
     public function __invoke(ServerRequestInterface $request): string
     {

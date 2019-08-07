@@ -3,21 +3,12 @@
 namespace Hypario\Actions;
 
 use GuzzleHttp\Psr7\Response;
+use Hypario\Actions;
 use Hypario\Database\Table;
 use Psr\Http\Message\ServerRequestInterface;
 
-class DownloadApiAction
+class DownloadApiAction extends Actions
 {
-
-    /**
-     * @var Table
-     */
-    private $table;
-
-    public function __construct(Table $table)
-    {
-        $this->table = $table;
-    }
 
     public function __invoke(ServerRequestInterface $request)
     {
