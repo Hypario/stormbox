@@ -29,18 +29,15 @@ class DownloadApiAction
             ->fetchAll()->getAll();
 
         if (!empty($files)) {
-            chdir("build");
             // foreach file, create the folders, the file, and write the content
             foreach ($files as $file) {
-
                 if (dirname($file->path) !== $wanted) {
+                    // path of the subfolder or file
                     $path = substr($file->path, strpos($file->path, $wanted), strlen($file->path));
+                } else {
+                    // path of a root folder
+                    $path = "build/$wanted";
                 }
-
-// jamais de shell exec quand tu peux le faire en PHP
-// jamais de passage de paramètre non-échappé dans un exec
-// c.f. https://www.php.net/manual/en/ref.exec.php
-                exec('mkdir ' . dirname($path) . ' || touch ' . $path . ' && cat ../files/' . $file->uuid . ' >> ' . $path);
             }
 
             // if the file have an extension, get the zipname of it
@@ -49,29 +46,37 @@ class DownloadApiAction
             } else {
                 $zipname = "{$wanted}.zip";
             }
-// pareil, tu peux pas dépendre de la présence de `zip` dans le path,
-// surtout si tu as PHP libzip
-            //then zip the folder and remove the build
-            exec("zip -r $zipname $wanted && rm -rf $wanted");
+
+            //then zip the folder
 
             $zip = new \ZipArchive();
-            $zip->open($zipname);
+            $zip->open("build/" . $zipname, \ZipArchive::CREATE | \ZipArchive::OVERWRITE);
 
+            foreach ($files as $file) {
+                $zip->addFile("files/" . $file->uuid, $file->path);
+            }
+            $zip->close(); // the zip is created when closed
+
+            $zip->open("build/" . $zipname); // open it again to put the content inside
+
+            // create the download response by putting the zip content inside response
             $response = new Response(200, [
                 'Content-Type' => "application/zip",
                 'Content-Disposition' => "attachment; filename=" . $zipname,
                 'Pragma' => "public",
                 'Expires' => '0',
-                "Content-Length" => filesize($zipname)
+                "Content-Length" => filesize("build/" . $zipname)
             ], file_get_contents($zip->filename));
 
-            $zip->close();
-            unlink($zipname);
+            $zip->close(); // close it again to remove it
+
+            // remove the build
+            unlink("build/" . $zipname);
+
+            // return the download response
             return $response;
         }
-        // tu faisais une structure { Error, info }, et maintenant tu
-        // renvois seulement info ?
-        return json_encode("The wanted file or directory doesn't exist");
+        return '{"Error": 5, "Info": "The wanted file or directory does not exist"}';
     }
 
 }

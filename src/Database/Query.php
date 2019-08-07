@@ -172,20 +172,6 @@ class Query implements \IteratorAggregate
         return $record;
     }
 
-    /**
-     * Retourne un résultat ou renvoie une exception
-     * @return bool|mixed
-     * @throws NoRecordException
-     */
-    public function fetchOrFail()
-    {
-        $record = $this->fetch();
-        if ($record === false) {
-            throw new NoRecordException();
-        }
-        return $record;
-    }
-
     public function fetchAll(): QueryResult
     {
         return new QueryResult(

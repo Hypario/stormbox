@@ -3,7 +3,7 @@
     "authors": [
         {
             "name": "Hypario",
-            "email": "fabienduterte@orange.fr"
+            "email": "fabienduterte@mailfence.com"
         }
     ],
     "autoload": {
@@ -17,8 +17,7 @@
         "guzzlehttp/psr7": "^1.6",
         "php-di/php-di": "^6.0",
         "middlewares/whoops": "^1.2",
-      "ext-json": "*",
-      "ext-pdo": "*"
-      // INDENTATION MODAFUCKA
+        "ext-json": "*",
+        "ext-pdo": "*"
     }
 }

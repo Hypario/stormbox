@@ -55,7 +55,7 @@ function send(file, length = 64 * 1024, offset = 0) {
   // send the data to the server
   sendChunk(data).then(response => {
     // if the upload is a success and we have still chunks to do
-    if (status["ok"] && chunk < nbChunk) {
+    if (response["Error"] === 0 && chunk < nbChunk) {
       offset += length;
       // send another chunk
       send(file, length, offset);
