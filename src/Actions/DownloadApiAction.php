@@ -68,11 +68,4 @@ class DownloadApiAction
         return json_encode("The wanted file or directory doesn't exist");
     }
 
-    public function readfile(string $file)
-    {
-        flush();
-        readfile($file);
-        return "";
-    }
-
 }
