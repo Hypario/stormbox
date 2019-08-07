@@ -74,14 +74,4 @@ class DownloadApiAction
         return json_encode("The wanted file or directory doesn't exist");
     }
 
-    public function readfile(string $file)
-    {
-        // un flush dans la nature, c'pas souvent bon, t'es sûr de faire
-        // le bon traitement?
-        flush();
-        readfile($file);
-        // un return inutile, ça se met pas du tout
-        return "";
-    }
-
 }
