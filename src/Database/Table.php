@@ -79,11 +79,10 @@ class Table
      * Récupère un élément à partir de son id
      * @param int $id
      * @return mixed
-     * @throws NoRecordException
      */
     public function find(int $id)
     {
-        return $this->makeQuery()->where("id = $id")->fetchOrFail();
+        return $this->makeQuery()->where("id = $id")->fetch();
     }
 
     /**

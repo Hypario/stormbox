@@ -5,14 +5,23 @@ namespace Hypario\Actions;
 
 
 use GuzzleHttp\Psr7\UploadedFile;
-use Hypario\Actions;
+use Hypario\ActionInterface;
 use Hypario\Database\NoRecordException;
 use Hypario\Database\Table;
 use Psr\Http\Message\ServerRequestInterface;
 
-// ça s'abstrait, surtout le constructeur
-class ApiAction extends Actions
+class ApiAction implements ActionInterface
 {
+
+    /**
+     * @var Table
+     */
+    private $table;
+
+    public function __construct(Table $table)
+    {
+        $this->table = $table;
+    }
 
     public function __invoke(ServerRequestInterface $request): string
     {
@@ -27,7 +36,7 @@ class ApiAction extends Actions
 
         $path = $params["path"];
 
-        // valeur à ne pas hardcoder
+        // value that shouldn't be hard coded
         $length = isset($params["chunkSize"]) ? intval($params["chunkSize"]) : 64 * 1024;
 
         $file = $this->table->makeQuery()

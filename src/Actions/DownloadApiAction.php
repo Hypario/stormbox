@@ -3,12 +3,22 @@
 namespace Hypario\Actions;
 
 use GuzzleHttp\Psr7\Response;
-use Hypario\Actions;
+use Hypario\ActionInterface;
 use Hypario\Database\Table;
 use Psr\Http\Message\ServerRequestInterface;
 
-class DownloadApiAction extends Actions
+class DownloadApiAction implements ActionInterface
 {
+
+    /**
+     * @var Table
+     */
+    private $table;
+
+    public function __construct(Table $table)
+    {
+        $this->table = $table;
+    }
 
     public function __invoke(ServerRequestInterface $request)
     {
@@ -16,7 +26,7 @@ class DownloadApiAction extends Actions
 
         $files = $this->table->makeQuery()
             ->where('f.path LIKE ?')
-            ->params(['%' . $wanted . '%'])
+            ->params(["%$wanted%"])
             ->fetchAll()->getAll();
 
         if (!empty($files)) {
