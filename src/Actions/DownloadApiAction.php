@@ -37,7 +37,7 @@ class DownloadApiAction implements ActionInterface
                     $path = substr($file->path, strpos($file->path, $wanted), strlen($file->path));
                 } else {
                     // path of a root folder
-                    $path = "build/$wanted";
+                    $path = ROOT . "/build/$wanted";
                 }
             }
 
@@ -51,14 +51,14 @@ class DownloadApiAction implements ActionInterface
             //then zip the folder
 
             $zip = new \ZipArchive();
-            $zip->open("build/" . $zipname, \ZipArchive::CREATE | \ZipArchive::OVERWRITE);
+            $zip->open(ROOT . "/build/" . $zipname, \ZipArchive::CREATE | \ZipArchive::OVERWRITE);
 
             foreach ($files as $file) {
-                $zip->addFile("files/" . $file->uuid, $file->path);
+                $zip->addFile(ROOT . "/files/" . $file->uuid, $file->path);
             }
             $zip->close(); // the zip is created when closed
 
-            $zip->open("build/" . $zipname); // open it again to put the content inside
+            $zip->open(ROOT . "/build/" . $zipname); // open it again to put the content inside
 
             // create the download response by putting the zip content inside response
             $response = new Response(200, [
@@ -66,13 +66,13 @@ class DownloadApiAction implements ActionInterface
                 'Content-Disposition' => "attachment; filename=" . $zipname,
                 'Pragma' => "public",
                 'Expires' => '0',
-                "Content-Length" => filesize("build/" . $zipname)
+                "Content-Length" => filesize(ROOT . "/build/" . $zipname)
             ], file_get_contents($zip->filename));
 
             $zip->close(); // close it again to remove it
 
             // remove the build
-            unlink("build/" . $zipname);
+            unlink(ROOT . "/build/" . $zipname);
 
             // return the download response
             return $response;

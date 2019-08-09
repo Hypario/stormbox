@@ -11,7 +11,7 @@ return [
     'database.password' => 'root',
     'database.name' => 'stormbox',
 
-    RendererInterface::class => \DI\create(PHPRenderer::class)->constructor('views'),
+    RendererInterface::class => \DI\create(PHPRenderer::class)->constructor(ROOT . '/views'),
 
     PDO::class => function (ContainerInterface $c) {
         return new PDO("mysql:host={$c->get('database.host')};dbname={$c->get('database.name')}",
@@ -22,5 +22,5 @@ return [
                 PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
             ]
         );
-    }
+    },
 ];

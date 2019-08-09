@@ -45,11 +45,16 @@ class App implements RequestHandlerInterface
 
     public function run(ServerRequestInterface $request): ResponseInterface
     {
+
         $container = $this->getContainer();
+
+        // defines the routes
         $router = $container->get(Router::class);
         $router->get('/', IndexAction::class, 'index');
         $router->post('/api', ApiAction::class);
         $router->post('/api/download', DownloadApiAction::class);
+
+        // return the response
         return $this->handle($request);
     }
 

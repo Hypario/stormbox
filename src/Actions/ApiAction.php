@@ -45,10 +45,10 @@ class ApiAction implements ActionInterface
             ->fetch();
 
         if ($file) {
-            $uploadDirectory = 'files/' . $file->uuid;
+            $uploadDirectory = ROOT . '/files/' . $file->uuid;
         } else {
             $uuid = uniqid();
-            $uploadDirectory = 'files/' . $uuid;
+            $uploadDirectory = ROOT . '/files/' . $uuid;
         }
 
         /** @var $files UploadedFile[] */
