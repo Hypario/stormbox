@@ -8,6 +8,7 @@ use GuzzleHttp\Psr7\UploadedFile;
 use Hypario\ActionInterface;
 use Hypario\Database\NoRecordException;
 use Hypario\Database\Table;
+use Hypario\KnownException;
 use Psr\Http\Message\ServerRequestInterface;
 
 class ApiAction implements ActionInterface
@@ -31,7 +32,7 @@ class ApiAction implements ActionInterface
         $nbChunk = isset($params["nbChunk"]) ? intval($params["nbChunk"]) : 1;
 
         if (!isset($params["path"]) && !empty($params["path"])) {
-            return '{"Error": 1, "Info": "Your file must have a path (including the filename) to be uploaded."}';
+            throw new KnownException(ERROR_PATH);
         }
 
         $path = $params["path"];
@@ -55,15 +56,15 @@ class ApiAction implements ActionInterface
         $files = $request->getUploadedFiles();
 
         if (empty($files) || $files['blob']->getError()) {
-            return '{"Error": 2, "Info": "Failed to upload file, please contact the support."}';
+            throw new KnownException(ERROR_UPLOAD_FAILED);
         }
 
         if ($chunk > $nbChunk) {
-            return '{"Error": 3, "Info": "The chunk cannot be upper than the number of chunks."}';
+            throw new KnownException(ERROR_TOO_BIG_CHUNK);
         }
 
         if ($chunk <= 0 || $nbChunk <= 0) {
-            return '{"Error": 4, "Info": "The chunk or the number of chunk cannot be negative or equal to 0."}';
+            throw new KnownException(ERROR_MUST_BE_POSITIVE);
         }
 
         if ($chunk <= $nbChunk) {
@@ -77,7 +78,7 @@ class ApiAction implements ActionInterface
                 'uuid' => $uuid
             ]);
         }
-        return '{"Error": 0, "Info": "Upload successful."}';
+        throw new KnownException(ERROR_OK);
     }
 
 }

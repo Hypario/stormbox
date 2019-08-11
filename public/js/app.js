@@ -48,21 +48,20 @@ function send(file, length = 64 * 1024, offset = 0) {
   // put everything in FormData type
   data.append('blob', file.slice(offset, length + offset));
   data.append('path', path);
-  data.append('nbChunk', nbChunk);
+  data.append('nbChunk', chunkSize);
   data.append('chunk', chunk);
   data.append('chunkSize', length);
 
   // send the data to the server
   sendChunk(data).then(response => {
+    console.log(response);
     // if the upload is a success and we have still chunks to do
     if (response["Error"] === 0 && chunk < nbChunk) {
       offset += length;
       // send another chunk
       send(file, length, offset);
-    } else if (status["Error"]) {
-      console.log(status["Error"])
     }
-  });
+  })
 }
 
 // send the data to the server
@@ -73,5 +72,5 @@ async function sendChunk(data) {
     body: data,
   });
 
-  return await response.json();
+  return response;
 }
