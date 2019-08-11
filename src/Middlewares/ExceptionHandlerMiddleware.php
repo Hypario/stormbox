@@ -1,24 +1,28 @@
 <?php
 
+
 namespace Hypario\Middlewares;
 
-use Hypario\Router;
+
+use GuzzleHttp\Psr7\Response;
+use Hypario\KnownException;
+use Hypario\KnownExceptionResolver;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
-class RouterMiddleware implements MiddlewareInterface
+class ExceptionHandlerMiddleware implements MiddlewareInterface
 {
 
     /**
-     * @var Router
+     * @var KnownExceptionResolver
      */
-    private $router;
+    private $resolver;
 
-    public function __construct(Router $router)
+    public function __construct(KnownExceptionResolver $resolver)
     {
-        $this->router = $router;
+        $this->resolver = $resolver;
     }
 
     /**
@@ -30,20 +34,11 @@ class RouterMiddleware implements MiddlewareInterface
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        // check if the url matched a route
-        $route = $this->router->match($request);
-        if (is_null($route)) {
+        try {
             return $handler->handle($request);
+        } catch (KnownException $e) {
+            return new Response($e->getCode() === ERROR_OK ? 200 : 500, [],
+                json_encode(["Error" => $e->getCode(), "Info" => $this->resolver->getMessage($e->getCode())]));
         }
-
-        // put the parameters in the request
-        $params = $route->getParams();
-        foreach($params as $param => $value) {
-            $request = $request->withAttribute($param, $value);
-        }
-        $request = $request->withAttribute(get_class($route), $route);
-
-        // go to the next middleware
-        return $handler->handle($request);
     }
 }

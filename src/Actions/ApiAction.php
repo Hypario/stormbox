@@ -24,6 +24,12 @@ class ApiAction implements ActionInterface
         $this->table = $table;
     }
 
+
+    /**
+     * @param ServerRequestInterface $request
+     * @return string
+     * @throws KnownException
+     */
     public function __invoke(ServerRequestInterface $request): string
     {
         $params = $request->getParsedBody();

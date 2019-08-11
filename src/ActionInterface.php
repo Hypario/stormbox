@@ -11,6 +11,7 @@ interface ActionInterface
     /**
      * @param ServerRequestInterface $request
      * @return ResponseInterface|string
+     * @throws KnownException
      */
     public function __invoke(ServerRequestInterface $request);
 

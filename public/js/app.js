@@ -1,4 +1,4 @@
-const chunkSize = 1024;
+const chunkSize = 64 * 1024;
 
 const div = document.getElementById('drop');
 // triggered when a file is hovering the div

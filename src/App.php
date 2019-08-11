@@ -6,11 +6,11 @@ use DI\ContainerBuilder;
 use Hypario\Actions\ApiAction;
 use Hypario\Actions\DownloadApiAction;
 use Hypario\Actions\IndexAction;
-use Hypario\Middlewares\CombinedMiddleware;
 use Hypario\Middlewares\RoutePrefixedMiddleware;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
 class App implements RequestHandlerInterface
@@ -28,6 +28,11 @@ class App implements RequestHandlerInterface
      */
     private $container;
 
+    /**
+     * @var int
+     */
+    private $index = 0;
+
     public function __construct(string $definition)
     {
         $this->definition = $definition;
@@ -43,6 +48,10 @@ class App implements RequestHandlerInterface
         return $this;
     }
 
+    /**
+     * @param ServerRequestInterface $request
+     * @return ResponseInterface
+     */
     public function run(ServerRequestInterface $request): ResponseInterface
     {
 
@@ -77,7 +86,23 @@ class App implements RequestHandlerInterface
      */
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
-        $middleware = new CombinedMiddleware($this->getContainer(), $this->middlewares);
+        $middleware = $this->getMiddleware();
+
+        /**
+         * @var MiddlewareInterface $middleware
+         */
         return $middleware->process($request, $this);
     }
+
+    /**
+     * @return null|MiddlewareInterface
+     */
+    private function getMiddleware(): MiddlewareInterface
+    {
+        $middleware = $this->container->get($this->middlewares[$this->index]);
+        ++$this->index;
+
+        return $middleware;
+    }
+
 }

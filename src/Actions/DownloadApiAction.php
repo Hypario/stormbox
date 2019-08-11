@@ -5,6 +5,7 @@ namespace Hypario\Actions;
 use GuzzleHttp\Psr7\Response;
 use Hypario\ActionInterface;
 use Hypario\Database\Table;
+use Hypario\KnownException;
 use Psr\Http\Message\ServerRequestInterface;
 
 class DownloadApiAction implements ActionInterface
@@ -20,6 +21,11 @@ class DownloadApiAction implements ActionInterface
         $this->table = $table;
     }
 
+    /**
+     * @param ServerRequestInterface $request
+     * @return Response|\Psr\Http\Message\ResponseInterface|string
+     * @throws KnownException
+     */
     public function __invoke(ServerRequestInterface $request)
     {
         $wanted = $request->getParsedBody()['path'];
@@ -77,7 +83,7 @@ class DownloadApiAction implements ActionInterface
             // return the download response
             return $response;
         }
-        return '{"Error": 5, "Info": "The wanted file or directory does not exist"}';
+        throw new KnownException(ERROR_FILE_DONT_EXIST);
     }
 
 }
