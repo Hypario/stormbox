@@ -3,8 +3,6 @@
 namespace Hypario\Middlewares;
 
 use GuzzleHttp\Psr7\Response;
-use Hypario\ActionInterface;
-use Hypario\KnownException;
 use Hypario\Route;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -29,22 +27,19 @@ class DispatcherMiddleware implements MiddlewareInterface
      * @param ServerRequestInterface $request
      * @param RequestHandlerInterface $handler
      * @return ResponseInterface
-     * @throws KnownException
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
+        // get the route from the RouterMiddleware
         $route = $request->getAttribute(Route::class);
         if (is_null($route)) {
             return $handler->handle($request);
         }
 
+        // get the handler from the route
         $callback = $this->container->get($route->getHandler());
-        if (is_null($callback)) {
-            return $handler->handle($request);
-        } elseif (is_callable($callback)) {
-            /**
-             * @var ActionInterface $callback;
-             */
+        // callback cannot be null
+        if (is_callable($callback)) {
             $response = $callback($request);
             if (is_string($response)) {
                 return new Response(200, [], $response);

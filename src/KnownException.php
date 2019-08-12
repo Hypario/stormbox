@@ -2,8 +2,6 @@
 
 namespace Hypario;
 
-use Throwable;
-
 /**
  * Handle all the exceptions known by the API
  * Class KnownExceptions

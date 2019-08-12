@@ -33,6 +33,12 @@ class RoutePrefixedMiddleware implements MiddlewareInterface
         $this->prefix = $prefix;
         $this->middleware = $middleware;
     }
+
+    /**
+     * @param ServerRequestInterface $request
+     * @param RequestHandlerInterface $handler
+     * @return ResponseInterface
+     */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         $path = $request->getUri()->getPath();

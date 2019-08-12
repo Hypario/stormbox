@@ -6,7 +6,6 @@ namespace Hypario\Actions;
 
 use GuzzleHttp\Psr7\UploadedFile;
 use Hypario\ActionInterface;
-use Hypario\Database\NoRecordException;
 use Hypario\Database\Table;
 use Hypario\KnownException;
 use Psr\Http\Message\ServerRequestInterface;
@@ -53,6 +52,7 @@ class ApiAction implements ActionInterface
 
         if ($file) {
             $uploadDirectory = ROOT . '/files/' . $file->uuid;
+            $uuid = $file->uuid;
         } else {
             $uuid = uniqid();
             $uploadDirectory = ROOT . '/files/' . $uuid;
@@ -74,7 +74,8 @@ class ApiAction implements ActionInterface
         }
 
         if ($chunk <= $nbChunk) {
-            file_put_contents($uploadDirectory, $files['blob']->getStream()->read($length), FILE_APPEND);
+            $flag = $chunk === 1 ? 0 : FILE_APPEND;
+            file_put_contents($uploadDirectory, $files['blob']->getStream()->read($length), $flag);
             $files['blob']->getStream()->close();
         }
 

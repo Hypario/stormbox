@@ -5,7 +5,6 @@ use Hypario\Middlewares\DispatcherMiddleware;
 use Hypario\Middlewares\ExceptionHandlerMiddleware;
 use Hypario\Middlewares\NotFoundMiddleware;
 use Hypario\Middlewares\RouterMiddleware;
-use Middlewares\Whoops;
 
 define('ROOT', dirname(__DIR__));
 

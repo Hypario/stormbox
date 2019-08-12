@@ -4,7 +4,7 @@
 namespace Hypario;
 
 /**
- * Entitée correspondant aux fichiers
+ * Entity that correspond to a file
  * Class File
  * @package Hypario
  */

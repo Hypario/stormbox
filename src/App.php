@@ -29,6 +29,7 @@ class App implements RequestHandlerInterface
     private $container;
 
     /**
+     * used to know what middleware to process
      * @var int
      */
     private $index = 0;
@@ -38,10 +39,15 @@ class App implements RequestHandlerInterface
         $this->definition = $definition;
     }
 
-    public function pipe(string $routePrefix, $middleware = null): self
+    /**
+     * @param $middleware
+     * @param string|null $routePrefix
+     * @return App
+     */
+    public function pipe($middleware, string $routePrefix = null): self
     {
-        if (is_null($middleware)) {
-            $this->middlewares[] = $routePrefix;
+        if (is_null($routePrefix)) {
+            $this->middlewares[] = $middleware;
         } else {
             $this->middlewares[] = new RoutePrefixedMiddleware($this->getContainer(), $routePrefix, $middleware);
         }
@@ -95,7 +101,7 @@ class App implements RequestHandlerInterface
     }
 
     /**
-     * @return null|MiddlewareInterface
+     * @return MiddlewareInterface
      */
     private function getMiddleware(): MiddlewareInterface
     {
