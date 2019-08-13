@@ -28,7 +28,12 @@ class DownloadApiAction implements ActionInterface
      */
     public function __invoke(ServerRequestInterface $request)
     {
-        $wanted = $request->getParsedBody()['path'];
+        $params = $request->getParsedBody();
+        if (isset($params['path']) && !empty($params['path'])) {
+            $wanted = $params['path'];
+        } else {
+            throw new KnownException(ERROR_FILE_DONT_EXIST);
+        }
 
         $files = $this->table->makeQuery()
             ->where('f.path LIKE ?')

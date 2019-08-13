@@ -5,16 +5,19 @@ use Hypario\Middlewares\DispatcherMiddleware;
 use Hypario\Middlewares\ExceptionHandlerMiddleware;
 use Hypario\Middlewares\NotFoundMiddleware;
 use Hypario\Middlewares\RouterMiddleware;
+use Middlewares\Whoops;
 
 define('ROOT', dirname(__DIR__));
 
-require ROOT .'/vendor/autoload.php';
+require ROOT . '/vendor/autoload.php';
 
 $app = new App(ROOT . '/config/config.php');
 
 require ROOT . '/config/errors.php';
 
-$app->pipe(ExceptionHandlerMiddleware::class)
+$app
+    ->pipe(Whoops::class)
+    ->pipe(ExceptionHandlerMiddleware::class)
     ->pipe(RouterMiddleware::class)
     ->pipe(DispatcherMiddleware::class)
     ->pipe(NotFoundMiddleware::class);

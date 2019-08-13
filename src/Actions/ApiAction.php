@@ -36,9 +36,11 @@ class ApiAction implements ActionInterface
         $chunk = isset($params["chunk"]) ? intval($params["chunk"]) : 1;
         $nbChunk = isset($params["nbChunk"]) ? intval($params["nbChunk"]) : 1;
 
-        if (!isset($params["path"]) && !empty($params["path"])) {
+
+        if (!isset($params["path"]) || empty($params["path"])) {
             throw new KnownException(ERROR_PATH);
         }
+
 
         $path = $params["path"];
 
@@ -77,15 +79,18 @@ class ApiAction implements ActionInterface
             $flag = $chunk === 1 ? 0 : FILE_APPEND;
             file_put_contents($uploadDirectory, $files['blob']->getStream()->read($length), $flag);
             $files['blob']->getStream()->close();
+
+            if (!isset($file) || empty($file)) {
+                $this->table->insert([
+                    'path' => $path,
+                    'uuid' => $uuid
+                ]);
+            }
+
+            throw new KnownException(ERROR_OK);
         }
 
-        if (!isset($file) || empty($file)) {
-            $this->table->insert([
-                'path' => $path,
-                'uuid' => $uuid
-            ]);
-        }
-        throw new KnownException(ERROR_OK);
+        throw new KnownException(ERROR_DEFAULT);
     }
 
 }

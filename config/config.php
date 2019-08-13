@@ -14,7 +14,7 @@ return [
     RendererInterface::class => \DI\create(PHPRenderer::class)->constructor(ROOT . '/views'),
 
     PDO::class => function (ContainerInterface $c) {
-        return new PDO("mysql:host={$c->get('database.host')};dbname={$c->get('database.name')}",
+        return new PDO("mysql:host={$c->get('database.host')};dbname={$c->get('database.name')};charset=UTF8",
             $c->get('database.username'),
             $c->get('database.password'),
             [
