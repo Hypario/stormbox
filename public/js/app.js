@@ -66,7 +66,7 @@ function send(file, length = 64 * 1024, offset = 0) {
 // send the data to the server
 async function sendChunk(data) {
 
-  const response = await fetch('/api', {
+  const response = await fetch('/api/upload', {
     method: 'POST',
     body: data,
   });

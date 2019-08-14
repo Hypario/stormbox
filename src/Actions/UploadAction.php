@@ -10,7 +10,7 @@ use Hypario\Database\Table;
 use Hypario\KnownException;
 use Psr\Http\Message\ServerRequestInterface;
 
-class ApiAction implements ActionInterface
+class UploadAction implements ActionInterface
 {
 
     /**
@@ -52,13 +52,15 @@ class ApiAction implements ActionInterface
             ->where("f.path = ?")->params([$path])
             ->fetch();
 
+        // get or generate uuid
         if ($file) {
-            $uploadDirectory = ROOT . '/files/' . $file->uuid;
-            $uuid = $file->uuid;
+            $uuid = $this->binToUuid($file->uuid);
         } else {
-            $uuid = uniqid();
-            $uploadDirectory = ROOT . '/files/' . $uuid;
+            $uuid = $this->gen_uuid();
         }
+
+        // generate the upload path from uuid
+        $uploadDirectory = ROOT . '/files/' . $uuid;
 
         /** @var $files UploadedFile[] */
         $files = $request->getUploadedFiles();
@@ -83,7 +85,7 @@ class ApiAction implements ActionInterface
             if (!isset($file) || empty($file)) {
                 $this->table->insert([
                     'path' => $path,
-                    'uuid' => $uuid
+                    'uuid' => $this->uuidToBin($uuid)
                 ]);
             }
 
@@ -91,6 +93,54 @@ class ApiAction implements ActionInterface
         }
 
         throw new KnownException(ERROR_DEFAULT);
+    }
+
+    /**
+     * generate a v4 uuid
+     * @return string
+     */
+    private function gen_uuid(): string
+    {
+        return sprintf('%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
+
+            // 32 bits for "time_low"
+            mt_rand(0, 0xffff), mt_rand(0, 0xffff),
+
+            // 16 bits for "time_mid"
+            mt_rand(0, 0xffff),
+
+            // 16 bits for "time_hi_and_version",
+            // four most significant bits holds version number 4
+            mt_rand(0, 0x0fff) | 0x4000,
+
+            // 16 bits, 8 bits for "clk_seq_hi_res",
+            // 8 bits for "clk_seq_low",
+            // two most significant bits holds zero and one for variant DCE1.1
+            mt_rand(0, 0x3fff) | 0x8000,
+
+            // 48 bits for "node"
+            mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff)
+        );
+    }
+
+    /**
+     * transform a uuid to binary to optimize DB
+     * @param string $uuid
+     * @return string
+     */
+    private function uuidToBin(string $uuid): string
+    {
+        return pack("H*", str_replace('-', '', $uuid));
+    }
+
+    /**
+     * transform a binary to uuid
+     * @param string $bin
+     * @return string
+     */
+    private function binToUuid(string $bin): string
+    {
+        return join("-", unpack("H8time_low/H4time_mid/H4time_hi/H4clock_seq_hi/H12clock_seq_low", $bin));
     }
 
 }

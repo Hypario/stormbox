@@ -58,7 +58,7 @@ class DownloadApiAction implements ActionInterface
 
             foreach ($files as $file) {
                 // all the directories are created automatically (due to localname)
-                $zip->addFile(ROOT . "/files/" . $file->uuid, $file->path);
+                $zip->addFile(ROOT . "/files/" . $this->binToUuid($file->uuid), $file->path);
             }
 
             $zip->close(); // the zip is created when closed
@@ -83,6 +83,16 @@ class DownloadApiAction implements ActionInterface
             return $response;
         }
         throw new KnownException(ERROR_FILE_DONT_EXIST);
+    }
+
+    /**
+     * transform a binary to uuid
+     * @param string $bin
+     * @return string
+     */
+    private function binToUuid(string $bin): string
+    {
+        return join("-", unpack("H8time_low/H4time_mid/H4time_hi/H4clock_seq_hi/H12clock_seq_low", $bin));
     }
 
 }

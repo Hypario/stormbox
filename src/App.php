@@ -3,9 +3,6 @@
 namespace Hypario;
 
 use DI\ContainerBuilder;
-use Hypario\Actions\ApiAction;
-use Hypario\Actions\DownloadApiAction;
-use Hypario\Actions\IndexAction;
 use Hypario\Middlewares\RoutePrefixedMiddleware;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -62,12 +59,6 @@ class App implements RequestHandlerInterface
     {
 
         $container = $this->getContainer();
-
-        // defines the routes
-        $router = $container->get(Router::class);
-        $router->get('/', IndexAction::class, 'index');
-        $router->post('/api', ApiAction::class);
-        $router->post('/api/download', DownloadApiAction::class);
 
         // return the response
         return $this->handle($request);

@@ -7,6 +7,8 @@ use Hypario\Middlewares\NotFoundMiddleware;
 use Hypario\Middlewares\RouterMiddleware;
 use Middlewares\Whoops;
 
+use function Http\Response\send;
+
 define('ROOT', dirname(__DIR__));
 
 require ROOT . '/vendor/autoload.php';
@@ -14,6 +16,7 @@ require ROOT . '/vendor/autoload.php';
 $app = new App(ROOT . '/config/config.php');
 
 require ROOT . '/config/errors.php';
+require ROOT . '/config/routes.php';
 
 $app
     ->pipe(Whoops::class)
@@ -24,5 +27,5 @@ $app
 
 if (php_sapi_name() !== "cli") {
     $response = $app->run(\GuzzleHttp\Psr7\ServerRequest::fromGlobals());
-    \Http\Response\send($response);
+    send($response);
 }

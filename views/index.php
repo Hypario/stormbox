@@ -15,6 +15,11 @@
     <button>Envoyer</button>
 </form>
 
+<form action="/api/files" method="post">
+    <input type="text" name="path">
+    <button>Envoyer</button>
+</form>
+
 <div id="drop"></div>
 
 <script src="js/app.js"></script>
