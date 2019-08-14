@@ -4,11 +4,11 @@
 namespace Hypario\Actions;
 
 
-use function GuzzleHttp\Psr7\str;
 use Hypario\ActionInterface;
 use Hypario\Database\Table;
 use Hypario\File;
 use Hypario\KnownException;
+use Hypario\structures\Node;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -32,32 +32,29 @@ class FileAction implements ActionInterface
      */
     public function __invoke(ServerRequestInterface $request): string
     {
-        if (!empty($request->getParsedBody())) {
-            return $this->getContent($request->getParsedBody());
+        /** @var File[] $files */
+        $files = $this->table->makeQuery()
+            ->select('f.*')
+            ->fetchAll()
+            ->getAll();
+
+        $tree = new Node(['name' => '/']);
+        foreach ($files as $file) {
+
+            $parts = explode('/', $file->path);
+            $leafPart = array_pop($parts);
+
+            $parentNode = &$tree;
+            foreach ($parts as $part) {
+                $parentNode->addChildren($part, new Node(['name' => $part]));
+
+                $parentNode = &$parentNode->childrens[$part];
+            }
+
+            if (empty($parentNode->childrens[$leafPart])) {
+                $parentNode->addChildren($leafPart, new Node(['name' => $leafPart]));
+            }
         }
-        return $this->getAll();
-    }
-
-    /**
-     * @return string
-     */
-    private function getAll(): string
-    {
-        return json_encode(
-            $this->table->makeQuery()
-                ->select('f.*')
-                ->fetchAll()
-                ->getAll()
-        );
-    }
-
-    /**
-     * @param array $params
-     * @return string
-     */
-    private function getContent(array $params): string
-    {
-        var_dump("To be developped");
-        die();
+        return json_encode($tree->toArray());
     }
 }

@@ -54,7 +54,7 @@ class UploadAction implements ActionInterface
 
         // get or generate uuid
         if ($file) {
-            $uuid = $this->binToUuid($file->uuid);
+            $uuid = $file->uuid;
         } else {
             $uuid = $this->gen_uuid();
         }
@@ -131,16 +131,6 @@ class UploadAction implements ActionInterface
     private function uuidToBin(string $uuid): string
     {
         return pack("H*", str_replace('-', '', $uuid));
-    }
-
-    /**
-     * transform a binary to uuid
-     * @param string $bin
-     * @return string
-     */
-    private function binToUuid(string $bin): string
-    {
-        return join("-", unpack("H8time_low/H4time_mid/H4time_hi/H4clock_seq_hi/H12clock_seq_low", $bin));
     }
 
 }
