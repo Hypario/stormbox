@@ -38,23 +38,44 @@ class FileAction implements ActionInterface
             ->fetchAll()
             ->getAll();
 
-        $tree = new Node(['name' => '/']);
+        $tree = new Node(['name' => '/', 'type' => 'dir']);
         foreach ($files as $file) {
 
+            // get all the subfolder (if there is at least one)
             $parts = explode('/', $file->path);
+
+            // get all the leaf (all the files at the end)
             $leafPart = array_pop($parts);
 
+            // we need here the root of the tree (here is '/')
             $parentNode = &$tree;
-            foreach ($parts as $part) {
-                $parentNode->addChildren($part, new Node(['name' => $part]));
 
+            // add all the subfolders to the tree
+            foreach ($parts as $part) {
+
+                // add a subfolder as a node, in data we give the name and is_dir = true
+                $parentNode->addChildren(
+                    $part,
+                    new Node(
+                        ['name' => $part, 'type' => 'dir']
+                    )
+                );
+
+                // reference the next children (the next subfolder)
                 $parentNode = &$parentNode->childrens[$part];
             }
 
+            // add the files
             if (empty($parentNode->childrens[$leafPart])) {
-                $parentNode->addChildren($leafPart, new Node(['name' => $leafPart]));
+                $parentNode->addChildren(
+                    $leafPart,
+                    new Node(
+                        ['name' => $leafPart, 'type' => 'file']
+                    )
+                );
             }
         }
+        // return the tree json_encoded
         return json_encode($tree->toArray());
     }
 }

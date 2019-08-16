@@ -40,13 +40,35 @@ class DownloadApiAction implements ActionInterface
             ->params(["%$wanted%"])
             ->fetchAll()->getAll();
 
+
         if (!empty($files)) {
+
+            $precise = false;
+
+            // if is a path get last item in path
+            if (strpos(trim($wanted, '/'), '/')) {
+                $parts = explode('/', $wanted);
+                $wanted = array_pop($parts);
+
+                // need a precise file
+                $precise = true;
+            }
 
             // if the file have an extension, get the zipname of it
             if (strpos($wanted, '.')) {
                 $zipName = substr($wanted, 0, strpos($wanted, '.')) . '.zip';
-            } else {
+            } // else is a folder
+            else {
+                // can't be a precise file if folder
+                $precise = false;
+
+                // get the zipname of a folder
                 $zipName = "{$wanted}.zip";
+
+                // repath to get all the subfolders
+                foreach ($files as $file) {
+                    $file->path = substr($file->path, strpos($file->path, $wanted));
+                }
             }
 
             // path to zip
@@ -58,7 +80,7 @@ class DownloadApiAction implements ActionInterface
 
             foreach ($files as $file) {
                 // all the directories are created automatically (due to localname)
-                $zip->addFile(ROOT . "/files/" . $file->uuid, $file->path);
+                $zip->addFile(ROOT . "/files/" . $file->uuid, $precise ? $wanted : $file->path);
             }
 
             $zip->close(); // the zip is created when closed
