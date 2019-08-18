@@ -29,7 +29,7 @@ class DownloadApiAction implements ActionInterface
     public function __invoke(ServerRequestInterface $request)
     {
         $params = $request->getParsedBody();
-        if (isset($params['path']) && !empty($params['path'])) {
+        if (!empty($params['path'])) {
             $wanted = $params['path'];
         } else {
             throw new KnownException(ERROR_FILE_DONT_EXIST);
