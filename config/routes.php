@@ -11,4 +11,4 @@ $router = $app->getContainer()->get(Router::class);
 $router->get('/', IndexAction::class, 'index');
 $router->post('/api/upload', UploadAction::class);
 $router->post('/api/download', DownloadApiAction::class);
-$router->get('/api/files', FileAction::class);
+$router->post('/api/files', FileAction::class);

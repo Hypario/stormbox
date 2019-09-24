@@ -85,7 +85,7 @@ class UploadAction implements ActionInterface
             if (!isset($file) || empty($file)) {
                 $this->table->insert([
                     'path' => $path,
-                    'uuid' => $this->uuidToBin($uuid)
+                    'uuid' => $uuid
                 ]);
             }
 
@@ -121,16 +121,6 @@ class UploadAction implements ActionInterface
             // 48 bits for "node"
             mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff)
         );
-    }
-
-    /**
-     * transform a uuid to binary to optimize DB
-     * @param string $uuid
-     * @return string
-     */
-    private function uuidToBin(string $uuid): string
-    {
-        return pack("H*", str_replace('-', '', $uuid));
     }
 
 }

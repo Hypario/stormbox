@@ -22,6 +22,7 @@ class DownloadApiAction implements ActionInterface
     }
 
     /**
+
      * @param ServerRequestInterface $request
      * @return Response|\Psr\Http\Message\ResponseInterface|string
      * @throws KnownException
@@ -82,7 +83,6 @@ class DownloadApiAction implements ActionInterface
                 // all the directories are created automatically (due to localname)
                 $zip->addFile(ROOT . "/files/" . $file->uuid, $precise ? $wanted : $file->path);
             }
-
             $zip->close(); // the zip is created when closed
 
             $zip->open($zipPath); // open it again to send the content

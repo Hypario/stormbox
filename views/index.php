@@ -11,15 +11,18 @@
 <body>
 
 <form action="/api/download" method="post">
-    <input type="text" name="path">
+    <label for="path">"Le nom du fichier / dossier que vous voulez télécharger</label>
+    <input type="text" name="path" id="path">
     <button>Envoyer</button>
 </form>
 
-<form action="/api/files" method="post">
-    <input type="text" name="path">
+<form action="/api/files" method="post" id="getFile">
+    <label for="tree">Le nom du fichier / dossier dont vous voulez voir le contenu</label>
+    <input type="text" name="path" id="tree">
     <button>Envoyer</button>
 </form>
 
+<p>Prenez et déplacer votre fichier / dossier dans la zone pour l'upload</p>
 <div id="drop"></div>
 
 <script src="js/app.js"></script>

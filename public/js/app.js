@@ -73,3 +73,26 @@ async function sendChunk(data) {
 
   return response.json();
 }
+
+// get the file using the data given
+async function getFile(data) {
+  const response = await fetch('/api/files', {
+    method: 'POST',
+    body: data
+  });
+
+  return response.json();
+}
+
+// add an even to the form who is used to get the files
+let form = document.getElementById("getFile");
+form.addEventListener('submit', function (e) {
+  e.preventDefault();
+
+  let data = new FormData(this);
+
+  getFile(data).then(response => {
+      console.log(response);
+    }
+  )
+});

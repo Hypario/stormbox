@@ -8,7 +8,7 @@ use Hypario\ActionInterface;
 use Hypario\Database\Table;
 use Hypario\File;
 use Hypario\KnownException;
-use Hypario\structures\Node;
+use Hypario\Structures\Node;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -32,11 +32,19 @@ class FileAction implements ActionInterface
      */
     public function __invoke(ServerRequestInterface $request): string
     {
+        $params = $request->getParsedBody();
+        // need validator
+        if (array_key_exists('path', $params)) {
+            $path = $params['path'];
+        } else {
+            throw new \Exception("No path providen");
+        }
+
         /** @var File[] $files */
         $files = $this->table->makeQuery()
-            ->select('f.*')
-            ->fetchAll()
-            ->getAll();
+            ->where('f.path LIKE ?')
+            ->params(["%$path%"])
+            ->fetchAll()->getAll();
 
         $tree = new Node(['name' => '/', 'type' => 'dir']);
         foreach ($files as $file) {

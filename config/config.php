@@ -9,12 +9,13 @@ return [
     'database.host' => 'localhost',
     'database.username' => 'root',
     'database.password' => 'root',
-    'database.name' => 'stormbox',
+    'database.name' => 'root',
+    'database.schema' => 'stormbox',
 
     RendererInterface::class => \DI\create(PHPRenderer::class)->constructor(ROOT . '/views'),
 
     PDO::class => function (ContainerInterface $c) {
-        return new PDO("mysql:host={$c->get('database.host')};dbname={$c->get('database.name')};charset=UTF8",
+        $pdo =  new PDO("pgsql:host={$c->get('database.host')};dbname={$c->get('database.name')};options='--client_encoding=UTF8'",
             $c->get('database.username'),
             $c->get('database.password'),
             [
@@ -22,5 +23,7 @@ return [
                 PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
             ]
         );
+        $pdo->exec("SET search_path TO {$c->get('database.schema')}");
+        return $pdo;
     },
 ];

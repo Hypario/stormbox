@@ -1,5 +1,6 @@
 <?php
 
+use Phinx\Db\Adapter\PostgresAdapter;
 use Phinx\Migration\AbstractMigration;
 
 class InitDatabase extends AbstractMigration
@@ -32,8 +33,8 @@ class InitDatabase extends AbstractMigration
     public function change()
     {
         $this->table('files')
-            ->addColumn('path', 'text', ['limit' => \Phinx\Db\Adapter\MysqlAdapter::TEXT_LONG])
-            ->addColumn('uuid', 'binary', ['limit' => '16'])
+            ->addColumn('path', PostgresAdapter::PHINX_TYPE_TEXT)
+            ->addColumn('uuid', PostgresAdapter::PHINX_TYPE_UUID)
             ->create();
     }
 }

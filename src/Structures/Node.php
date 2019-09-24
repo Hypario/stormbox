@@ -1,6 +1,6 @@
 <?php
 
-namespace Hypario\structures;
+namespace Hypario\Structures;
 
 class Node
 {
