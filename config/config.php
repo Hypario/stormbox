@@ -7,10 +7,10 @@ use function DI\factory;
 
 return [
 
-    'database.host' => 'localhost',
-    'database.username' => 'root',
-    'database.password' => 'root',
-    'database.name' => 'root',
+    'database.host' => 'ipabdd',
+    'database.username' => 'fabien.duterte',
+    'database.password' => 'eVCLo4Eb',
+    'database.name' => 'fabien.duterte',
     'database.schema' => 'stormbox',
 
     RendererInterface::class => \DI\create(PHPRenderer::class)->constructor(ROOT . '/views'),
