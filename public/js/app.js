@@ -1,4 +1,5 @@
-const chunkSize = 64 * 1024;
+const chunkSize = 2097152;
+const percent = document.getElementById("percent");
 
 const div = document.getElementById('drop');
 // triggered when a file is hovering the div
@@ -41,6 +42,9 @@ function send(file, length = 64 * 1024, offset = 0) {
   // actual chunk we are manipulating
   const chunk = (offset / length) + 1;
 
+  let percentage = Math.round((chunk / nbChunk) * 100);
+  percent.innerText = percentage + "%";
+
   // get the path of the file or directory
   const path = file.webkitRelativePath !== "" ? file.webkitRelativePath : file.name;
 
@@ -48,7 +52,7 @@ function send(file, length = 64 * 1024, offset = 0) {
   // put everything in FormData type
   data.append('blob', file.slice(offset, length + offset));
   data.append('path', path);
-  data.append('nbChunk', chunkSize);
+  data.append('nbChunk', nbChunk);
   data.append('chunk', chunk);
   data.append('chunkSize', length);
 

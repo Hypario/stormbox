@@ -9,11 +9,14 @@ use Hypario\Database\Table;
 use Hypario\File;
 use Hypario\KnownException;
 use Hypario\Structures\Node;
+use Hypario\Validator\Validator;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
-class FileAction implements ActionInterface
+class FileAction extends ActionInterface
 {
+
+    protected $params = ["path"];
 
     /**
      * @var Table
@@ -28,17 +31,18 @@ class FileAction implements ActionInterface
     /**
      * @param ServerRequestInterface $request
      * @return ResponseInterface|string
-     * @throws KnownException
+     * @throws \Exception
      */
     public function __invoke(ServerRequestInterface $request): string
     {
-        $params = $request->getParsedBody();
-        // need validator
-        if (array_key_exists('path', $params)) {
-            $path = $params['path'];
-        } else {
-            throw new \Exception("No path providen");
+        // it uses getParams to validate data
+        $validator = $this->getValidator($request);
+
+        if (!$validator->isValid()) {
+            throw new KnownException(ERROR_PATH);
         }
+
+        $path = $this->getParams($request)['path'];
 
         /** @var File[] $files */
         $files = $this->table->makeQuery()
@@ -46,7 +50,39 @@ class FileAction implements ActionInterface
             ->params(["%$path%"])
             ->fetchAll()->getAll();
 
+        // return the tree json_encoded
+        return json_encode($this->getTree($files)->toArray());
+    }
+
+    /**
+     * Filter the parameters passed
+     * @param ServerRequestInterface $request
+     * @return array
+     */
+    protected function getParams(ServerRequestInterface $request): array
+    {
+        $params = $request->getParsedBody();
+
+        return array_filter($params, function ($key) {
+            return in_array($key, $this->params);
+        }, ARRAY_FILTER_USE_KEY);
+    }
+
+    protected function getValidator(ServerRequestInterface $request): Validator
+    {
+        return parent::getValidator($request)
+            ->required('path');
+    }
+
+    /**
+     * @param File[] $files
+     * @return Node
+     */
+    private function getTree(array $files): Node
+    {
+
         $tree = new Node(['name' => '/', 'type' => 'dir']);
+
         foreach ($files as $file) {
 
             // get all the subfolder (if there is at least one)
@@ -83,7 +119,7 @@ class FileAction implements ActionInterface
                 );
             }
         }
-        // return the tree json_encoded
-        return json_encode($tree->toArray());
+
+        return $tree;
     }
 }

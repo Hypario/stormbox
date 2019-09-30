@@ -5,3 +5,4 @@ best practices to do
 
 - Code a validation system for the parameters.
 - Code authentification
+- Code a web module, we want a way for users to use an interface

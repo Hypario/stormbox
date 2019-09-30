@@ -2,17 +2,41 @@
 
 namespace Hypario;
 
+use Hypario\Validator\Validator;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
-interface ActionInterface
+abstract class ActionInterface
 {
+
+    /**
+     * Accepted params
+     * @var array
+     */
+    protected $params = [];
 
     /**
      * @param ServerRequestInterface $request
      * @return ResponseInterface|string
      * @throws KnownException
      */
-    public function __invoke(ServerRequestInterface $request);
+    public abstract function __invoke(ServerRequestInterface $request);
+
+    /**
+     * Filter the parameters passed
+     * @param ServerRequestInterface $request
+     * @return array
+     */
+    protected abstract function getParams(ServerRequestInterface $request): array;
+
+    /**
+     * return the validator with the given rules
+     * @param ServerRequestInterface $request
+     * @return Validator
+     */
+    protected function getValidator(ServerRequestInterface $request): Validator
+    {
+        return new Validator($this->getParams($request));
+    }
 
 }

@@ -11,7 +11,7 @@
 <body>
 
 <form action="/api/download" method="post">
-    <label for="path">"Le nom du fichier / dossier que vous voulez télécharger</label>
+    <label for="path">Le nom du fichier / dossier que vous voulez télécharger</label>
     <input type="text" name="path" id="path">
     <button>Envoyer</button>
 </form>
@@ -21,6 +21,8 @@
     <input type="text" name="path" id="tree">
     <button>Envoyer</button>
 </form>
+
+<p id="percent"></p>
 
 <p>Prenez et déplacer votre fichier / dossier dans la zone pour l'upload</p>
 <div id="drop"></div>

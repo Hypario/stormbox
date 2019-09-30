@@ -2,12 +2,12 @@
 
 namespace Hypario\Actions;
 
-use Hypario\Database\NoRecordException;
+use Hypario\ActionInterface;
 use Hypario\Database\Table;
 use Hypario\Renderer\RendererInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
-class IndexAction
+class IndexAction extends ActionInterface
 {
 
     /**
@@ -31,4 +31,13 @@ class IndexAction
         return $this->renderer->render('index');
     }
 
+    /**
+     * Filter the parameters passed
+     * @param ServerRequestInterface $request
+     * @return array
+     */
+    protected function getParams(ServerRequestInterface $request): array
+    {
+        return [];
+    }
 }

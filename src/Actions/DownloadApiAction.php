@@ -2,14 +2,21 @@
 
 namespace Hypario\Actions;
 
+use Hypario\Validator\Validator;
 use GuzzleHttp\Psr7\Response;
 use Hypario\ActionInterface;
 use Hypario\Database\Table;
 use Hypario\KnownException;
 use Psr\Http\Message\ServerRequestInterface;
 
-class DownloadApiAction implements ActionInterface
+class DownloadApiAction extends ActionInterface
 {
+
+    /**
+     * Accepted params
+     * @var array
+     */
+    protected $params = ["path"];
 
     /**
      * @var Table
@@ -22,19 +29,18 @@ class DownloadApiAction implements ActionInterface
     }
 
     /**
-
      * @param ServerRequestInterface $request
      * @return Response|\Psr\Http\Message\ResponseInterface|string
      * @throws KnownException
      */
     public function __invoke(ServerRequestInterface $request)
     {
-        $params = $request->getParsedBody();
-        if (!empty($params['path'])) {
-            $wanted = $params['path'];
-        } else {
-            throw new KnownException(ERROR_FILE_DONT_EXIST);
+        $params = $this->getParams($request);
+        $validator = $this->getValidator($request);
+        if (!$validator->isValid()) {
+            throw new KnownException(ERROR_PATH);
         }
+        $wanted = $params['path'];
 
         $files = $this->table->makeQuery()
             ->where('f.path LIKE ?')
@@ -107,4 +113,29 @@ class DownloadApiAction implements ActionInterface
         throw new KnownException(ERROR_FILE_DONT_EXIST);
     }
 
+    /**
+     * Filter the parameters passed
+     * @param ServerRequestInterface $request
+     * @return array
+     */
+    protected function getParams(ServerRequestInterface $request): array
+    {
+        $params = $request->getParsedBody();
+
+        return array_filter($params, function ($key) {
+            return in_array($key, $this->params);
+        }, ARRAY_FILTER_USE_KEY);
+    }
+
+    /**
+     * return the validator with the given rules
+     * @param ServerRequestInterface $request
+     * @return Validator
+     */
+    protected function getValidator(ServerRequestInterface $request): Validator
+    {
+        return parent::getValidator($request)
+            ->required('path')
+            ->notEmpty('path');
+    }
 }

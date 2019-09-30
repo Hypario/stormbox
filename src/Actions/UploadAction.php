@@ -10,7 +10,7 @@ use Hypario\Database\Table;
 use Hypario\KnownException;
 use Psr\Http\Message\ServerRequestInterface;
 
-class UploadAction implements ActionInterface
+class UploadAction extends ActionInterface
 {
 
     /**
@@ -123,4 +123,13 @@ class UploadAction implements ActionInterface
         );
     }
 
+    /**
+     * Filter the parameters passed
+     * @param ServerRequestInterface $request
+     * @return array
+     */
+    protected function getParams(ServerRequestInterface $request): array
+    {
+        // TODO: Implement getParams() method.
+    }
 }
