@@ -9,7 +9,7 @@ return [
 
     'database.host' => 'ipabdd',
     'database.username' => 'fabien.duterte',
-    'database.password' => 'eVCLo4Eb',
+    'database.password' => 'aze',
     'database.name' => 'fabien.duterte',
     'database.schema' => 'stormbox',
 
