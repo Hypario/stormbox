@@ -9,8 +9,8 @@ return [
 
     'database.host' => 'ipabdd',
     'database.username' => 'fabien.duterte',
-    'database.password' => 'aze',
-    'database.name' => 'fabien.duterte',
+    'database.password' => '',
+    'database.name' => 'stormbox',
     'database.schema' => 'stormbox',
 
     RendererInterface::class => \DI\create(PHPRenderer::class)->constructor(ROOT . '/views'),
