@@ -10,7 +10,7 @@ return [
     'database.host' => 'localhost',
     'database.username' => 'root',
     'database.password' => 'root',
-    'database.name' => 'stormbox',
+    'database.name' => 'root',
     'database.schema' => 'stormbox',
 
     RendererInterface::class => \DI\create(PHPRenderer::class)->constructor(ROOT . '/views'),
