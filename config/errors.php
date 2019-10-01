@@ -1,6 +1,6 @@
 <?php
 
-use Hypario\KnownExceptionResolver;
+use Framework\KnownExceptionResolver;
 
 $resolver = $app->getContainer()->get(KnownExceptionResolver::class);
 

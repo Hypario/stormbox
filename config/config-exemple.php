@@ -1,8 +1,8 @@
 <?php
 
-use Hypario\Database\DatabaseFactory;
-use Hypario\Renderer\PHPRenderer;
-use Hypario\Renderer\RendererInterface;
+use Framework\Database\DatabaseFactory;
+use Framework\Renderer\PHPRenderer;
+use Framework\Renderer\RendererInterface;
 use function DI\factory;
 
 return [

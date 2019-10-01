@@ -1,10 +1,12 @@
 <?php
 
-use Hypario\App;
-use Hypario\Middlewares\DispatcherMiddleware;
-use Hypario\Middlewares\ExceptionHandlerMiddleware;
-use Hypario\Middlewares\NotFoundMiddleware;
-use Hypario\Middlewares\RouterMiddleware;
+use App\ApiModule\ApiModule;
+use Framework\App;
+use Framework\Middlewares\DispatcherMiddleware;
+use Framework\Middlewares\ExceptionHandlerMiddleware;
+use Framework\Middlewares\NotFoundMiddleware;
+use Framework\Middlewares\RouterMiddleware;
+use GuzzleHttp\Psr7\ServerRequest;
 use Middlewares\Whoops;
 
 use function Http\Response\send;
@@ -16,7 +18,8 @@ require ROOT . '/vendor/autoload.php';
 $app = new App(ROOT . '/config/config.php');
 
 require ROOT . '/config/errors.php';
-require ROOT . '/config/routes.php';
+
+$app->addModule(ApiModule::class);
 
 $app
     ->pipe(Whoops::class)
@@ -26,6 +29,6 @@ $app
     ->pipe(NotFoundMiddleware::class);
 
 if (php_sapi_name() !== "cli") {
-    $response = $app->run(\GuzzleHttp\Psr7\ServerRequest::fromGlobals());
+    $response = $app->handle(ServerRequest::fromGlobals());
     send($response);
 }
