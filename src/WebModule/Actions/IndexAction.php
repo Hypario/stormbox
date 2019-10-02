@@ -1,6 +1,6 @@
 <?php
 
-namespace App\ApiModule\Actions;
+namespace App\WebModule\Actions;
 
 use Framework\ActionInterface;
 use Framework\Renderer\RendererInterface;
@@ -21,7 +21,7 @@ class IndexAction extends ActionInterface
 
     public function __invoke(ServerRequestInterface $request): string
     {
-        return $this->renderer->render('index');
+        return $this->renderer->render('@web/index');
     }
 
     /**

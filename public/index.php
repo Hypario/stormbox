@@ -1,6 +1,7 @@
 <?php
 
 use App\ApiModule\ApiModule;
+use App\WebModule\WebModule;
 use Framework\App;
 use Framework\Middlewares\DispatcherMiddleware;
 use Framework\Middlewares\ExceptionHandlerMiddleware;
@@ -19,7 +20,9 @@ $app = new App(ROOT . '/config/config.php');
 
 require ROOT . '/config/errors.php';
 
-$app->addModule(ApiModule::class);
+$app
+    ->addModule(ApiModule::class)
+    ->addModule(WebModule::class);
 
 $app
     ->pipe(Whoops::class)

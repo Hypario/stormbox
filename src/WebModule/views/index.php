@@ -1,14 +1,4 @@
-<!doctype html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width">
-
-    <title>Test</title>
-
-    <link rel="stylesheet" href="css/style.css">
-</head>
-<body>
+<?= $renderer->render('header'); ?>
 
 <form action="/api/download" method="post">
     <label for="path">Le nom du fichier / dossier que vous voulez télécharger</label>
@@ -27,7 +17,4 @@
 <p>Prenez et déplacer votre fichier / dossier dans la zone pour l'upload</p>
 <div id="drop"></div>
 
-<script src="js/app.js"></script>
-
-</body>
-</html>
+<?= $renderer->render('footer'); ?>
