@@ -1,14 +1,14 @@
 const chunkSize = 2097152;
 const percent = document.getElementById("percent");
 
-const div = document.getElementById('drop');
+const input = document.getElementById('drop');
 // triggered when a file is hovering the div
-div.addEventListener('dragover', (e) => {
+input.addEventListener('dragover', (e) => {
   e.preventDefault();
 });
 
 /// triggered when an item is droped in the div
-div.addEventListener('drop', (e) => {
+input.addEventListener('drop', (e) => {
   e.preventDefault();
   // for each items dropped, traverse the file tree
   for (const item of e.dataTransfer.items) {
