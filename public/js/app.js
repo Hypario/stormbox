@@ -1,14 +1,15 @@
-const chunkSize = 2097152;
-const percent = document.getElementById("percent");
+const chunkSize = 2097152; // size of a chunked file
+const percent = document.getElementById("percent"); // where to show the percentage
+const dropForm = document.getElementById('drop');
+const dropInput = document.getElementById('fileinput');
 
-const input = document.getElementById('drop');
 // triggered when a file is hovering the div
-input.addEventListener('dragover', (e) => {
+dropForm.addEventListener('dragover', (e) => {
   e.preventDefault();
 });
 
 /// triggered when an item is droped in the div
-input.addEventListener('drop', (e) => {
+dropForm.addEventListener('drop', (e) => {
   e.preventDefault();
   // for each items dropped, traverse the file tree
   for (const item of e.dataTransfer.items) {
@@ -16,7 +17,12 @@ input.addEventListener('drop', (e) => {
   }
 });
 
-function traverseFileTree(item, path = "") {
+dropInput.addEventListener('change', (e) => {
+  console.log(e);
+});
+
+// traverse the file tree
+function traverseFileTree(item) {
   if (item.isFile) {
     // get file
     item.file(file => {
@@ -28,7 +34,7 @@ function traverseFileTree(item, path = "") {
     const dirReader = item.createReader();
     dirReader.readEntries((entries) => {
       for (let i = 0; i < entries.length; i++) {
-        traverseFileTree(entries[i], path + item.name + "/");
+        traverseFileTree(entries[i]);
       }
     });
   }
@@ -89,8 +95,8 @@ async function getFile(data) {
 }
 
 // add an even to the form who is used to get the files
-let form = document.getElementById("getFile");
-form.addEventListener('submit', function (e) {
+const getFileForm = document.getElementById("getFile");
+getFileForm.addEventListener('submit', function (e) {
   e.preventDefault();
 
   let data = new FormData(this);

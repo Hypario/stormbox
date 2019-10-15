@@ -18,7 +18,7 @@
         <form action="" method="post" id="drop">
             <div class="form-group files">
                 <label for="upload">Upload your file</label>
-                <input type="file" class="form-control" id="fileinput">
+                <input type="file" class="form-control" id="fileinput" multiple>
             </div>
         </form>
     </div>
