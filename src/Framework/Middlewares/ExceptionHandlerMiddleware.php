@@ -1,12 +1,10 @@
 <?php
 
-
 namespace Framework\Middlewares;
 
-
+use Framework\Exception\KnownException;
+use Framework\Exception\KnownExceptionResolver;
 use GuzzleHttp\Psr7\Response;
-use Framework\KnownException;
-use Framework\KnownExceptionResolver;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -31,17 +29,13 @@ class ExceptionHandlerMiddleware implements MiddlewareInterface
      * Processes an incoming server request in order to produce a response.
      * If unable to produce the response itself, it may delegate to the provided
      * request handler to do so.
-     * @param ServerRequestInterface $request
-     * @param RequestHandlerInterface $handler
-     * @return ResponseInterface
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         try {
             return $handler->handle($request);
         } catch (KnownException $e) {
-            return new Response($e->getCode() === ERROR_OK ? 200 : 500, [],
-                json_encode(["Error" => $e->getCode(), "Info" => $this->resolver->getMessage($e->getCode())]));
+            return new Response($e->getCode() === 0 ? 200 : 500, [], "<h1>" . $this->resolver->getMessage($e->getCode()) . "</h1>");
         }
     }
 }

@@ -5,7 +5,7 @@ namespace App\WebModule;
 use App\WebModule\Actions\IndexAction;
 use Framework\Module;
 use Framework\Renderer\RendererInterface;
-use Hypario\Router;
+use Hypario\Router\Router;
 
 class WebModule extends Module
 {

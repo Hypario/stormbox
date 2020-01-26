@@ -2,24 +2,27 @@
 
 namespace Framework\Database;
 
+use Framework\Exception\NoRecordException;
+
 class Table
 {
+
     /**
      * @var \PDO
      */
     private $pdo;
 
     /**
-     * Nom de la table en BDD
+     * The table to use
      * @var string
      */
     protected $table;
 
     /**
-     * Entité à utiliser
+     * The entity to use in PDO
      * @var string
      */
-    protected $entity = null;
+    protected $entity;
 
     public function __construct(\PDO $pdo)
     {
@@ -27,6 +30,7 @@ class Table
     }
 
     /**
+     * Make a query with the from fulfilled and entity fulfilled
      * @return Query
      */
     public function makeQuery(): Query
@@ -37,7 +41,7 @@ class Table
     }
 
     /**
-     * Récupère tout les enregistrements
+     * Find all the records
      * @return Query
      */
     public function findAll(): Query
@@ -46,25 +50,25 @@ class Table
     }
 
     /**
-     * Récupère une ligne par rapport à un champ
-     *
+     * Find a record with a given field and parameter value
      * @param string $field
      * @param string $value
-     * @return mixed
+     * @return bool|mixed
      * @throws NoRecordException
      */
     public function findBy(string $field, string $value)
     {
-        return $this->makeQuery()->where("$field = :field")->params(["field" => $value])->fetchAll();
+        return $this->makeQuery()->where("$field = :field")->params(["field" => $value])->fetchOrFail();
     }
 
     /**
-     * Récupère une liste clef valeur de nos enregistrement
+     * Find all the records and return them in list
+     * @return array
      */
     public function findList(): array
     {
         $results = $this->pdo
-            ->query("SELECT id, name FROM {$this->table}")
+            ->query("SELECT id FROM {$this->table}")
             ->fetchAll(\PDO::FETCH_NUM);
         $list = [];
         foreach ($results as $result) {
@@ -74,17 +78,18 @@ class Table
     }
 
     /**
-     * Récupère un élément à partir de son id
+     * Find a record using the id
      * @param int $id
-     * @return mixed
+     * @return bool|mixed
+     * @throws NoRecordException
      */
     public function find(int $id)
     {
-        return $this->makeQuery()->where("id = $id")->fetch();
+        return $this->makeQuery()->where("id = $id")->fetchOrFail();
     }
 
     /**
-     * Récupère le nombre d'enregistrement
+     * Return the number of record
      * @return int
      */
     public function count(): int
@@ -92,9 +97,8 @@ class Table
         return $this->makeQuery()->count();
     }
 
-
     /**
-     * Met à jour un enregistrement dans la BDD
+     * Update a record with a given id with given parameters
      * @param int $id
      * @param array $params
      * @return bool
@@ -108,7 +112,7 @@ class Table
     }
 
     /**
-     * Insère un enregistrement
+     * Insert a record
      * @param array $params
      * @return bool
      */
@@ -126,7 +130,7 @@ class Table
     }
 
     /**
-     * Supprime un enregistrement
+     * Delete a record
      * @param int $id
      * @return bool
      */
@@ -136,6 +140,11 @@ class Table
         return $query->execute([$id]);
     }
 
+    /**
+     * Build all the field query for update
+     * @param $params
+     * @return string
+     */
     private function buildFieldQuery($params)
     {
         return join(', ', array_map(function ($field) {
@@ -144,6 +153,7 @@ class Table
     }
 
     /**
+     * Get the entity we are working with
      * @return string|null
      */
     public function getEntity(): string
@@ -152,6 +162,7 @@ class Table
     }
 
     /**
+     * Get the table we are working on
      * @return string
      */
     public function getTable(): string
@@ -168,7 +179,7 @@ class Table
     }
 
     /**
-     * Vérifie qu'un enregistrement existe
+     * Check if a record exist
      * @param $id
      * @return bool
      */
@@ -178,4 +189,5 @@ class Table
         $query->execute([$id]);
         return $id = $query->fetchColumn() !== false;
     }
+
 }

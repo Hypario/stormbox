@@ -2,6 +2,7 @@
 
 namespace Framework\Database;
 
+use Framework\Exception\NoRecordException;
 use Traversable;
 
 class Query implements \IteratorAggregate
@@ -168,6 +169,20 @@ class Query implements \IteratorAggregate
         }
         if ($this->entity) {
             return Hydrator::hydrate($record, $this->entity);
+        }
+        return $record;
+    }
+
+    /**
+     * Retourne un résultat ou renvoie une exception
+     * @return bool|mixed
+     * @throws NoRecordException
+     */
+    public function fetchOrFail()
+    {
+        $record = $this->fetch();
+        if ($record === false) {
+            throw new NoRecordException();
         }
         return $record;
     }

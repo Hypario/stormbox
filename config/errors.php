@@ -1,6 +1,6 @@
 <?php
 
-use Framework\KnownExceptionResolver;
+use Framework\Exception\KnownExceptionResolver;
 
 $resolver = $app->getContainer()->get(KnownExceptionResolver::class);
 

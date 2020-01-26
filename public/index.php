@@ -1,6 +1,7 @@
 <?php
 
 use App\ApiModule\ApiModule;
+use App\AuthModule\AuthModule;
 use App\WebModule\WebModule;
 use Framework\App;
 use Framework\Middlewares\DispatcherMiddleware;
@@ -22,7 +23,8 @@ require ROOT . '/config/errors.php';
 
 $app
     ->addModule(ApiModule::class)
-    ->addModule(WebModule::class);
+    ->addModule(WebModule::class)
+    ->addModule(AuthModule::class);
 
 $app
     ->pipe(Whoops::class)

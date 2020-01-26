@@ -7,7 +7,7 @@ use App\ApiModule\Actions\DownloadApiAction;
 use App\ApiModule\Actions\FileApiAction;
 use App\ApiModule\Actions\UploadApiAction;
 use Framework\Module;
-use Hypario\Router;
+use Hypario\Router\Router;
 use Psr\Container\ContainerInterface;
 
 class ApiModule extends Module

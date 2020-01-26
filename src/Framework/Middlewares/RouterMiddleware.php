@@ -2,11 +2,8 @@
 
 namespace Framework\Middlewares;
 
-use Hypario\Router;
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
+use Hypario\Router\Router;
 use Psr\Http\Server\MiddlewareInterface;
-use Psr\Http\Server\RequestHandlerInterface;
 
 class RouterMiddleware implements MiddlewareInterface
 {
@@ -27,27 +24,24 @@ class RouterMiddleware implements MiddlewareInterface
      * Processes an incoming server request in order to produce a response.
      * If unable to produce the response itself, it may delegate to the provided
      * request handler to do so.
-     * @param ServerRequestInterface $request
-     * @param RequestHandlerInterface $handler
-     * @return ResponseInterface
-     * @throws \Exception
      */
-    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
+    public function process(\Psr\Http\Message\ServerRequestInterface $request, \Psr\Http\Server\RequestHandlerInterface $handler): \Psr\Http\Message\ResponseInterface
     {
-        // check if the url matched a route
+        // get the matched route
         $route = $this->router->match($request);
+        // if no route matched, go to the next middleware
         if (is_null($route)) {
             return $handler->handle($request);
         }
 
-        // put the parameters in the request
+        // get the params of the matched route
         $params = $route->getParams();
         foreach($params as $param => $value) {
             $request = $request->withAttribute($param, $value);
         }
+        // put the route on the request
         $request = $request->withAttribute(get_class($route), $route);
-
-        // go to the next middleware
+        // go to the next route
         return $handler->handle($request);
     }
 }
