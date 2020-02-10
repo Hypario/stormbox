@@ -2,40 +2,27 @@
 
 namespace Framework\Validator;
 
-use Framework\Database\Table;
-use Psr\Http\Message\UploadedFileInterface;
+
+use App\Framework\Validator\ValidationError;
 
 class Validator
 {
 
-    private const MIME_TYPES = [
-        'jpg' => 'image/jpeg',
-        'jpeg' => 'image/jpeg',
-        'png' => 'image/png',
-        'pdf' => 'application/pdf'
-    ];
-
     /**
      * @var array
      */
-    private $params;
+    private array $params;
 
     /**
      * @var ValidationError[]
      */
-    private $errors = [];
+    private array $errors = [];
 
     public function __construct(array $params)
     {
         $this->params = $params;
     }
 
-
-    /**
-     * Vérifie que les champs sont présents dans le tableau
-     * @param string ...$keys
-     * @return Validator
-     */
     public function required(string ...$keys): self
     {
         foreach ($keys as $key) {
@@ -240,17 +227,6 @@ class Validator
         return $this->errors;
     }
 
-    /**
-     * Ajoute une erreur
-     * @param string $key
-     * @param string $rule
-     * @param array $attributes
-     */
-    private function addError(string $key, string $rule, array $attributes = []): void
-    {
-        $this->errors[$key] = new ValidationError($key, $rule, $attributes);
-    }
-
     private function getValue(string $key)
     {
         if (array_key_exists($key, $this->params)) {
@@ -258,4 +234,10 @@ class Validator
         }
         return null;
     }
+
+    private function addError(string $key, string $rule, array $attributes = []): void
+    {
+        $this->errors[$key] = new ValidationError($key, $rule, $attributes);
+    }
+
 }

@@ -4,132 +4,82 @@
 namespace App\ApiModule\Actions;
 
 
-use App\ApiModule\Tables\FilesTable;
+use Framework\Actions\Action;
+use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Psr7\UploadedFile;
-use Framework\ActionInterface;
-use Framework\KnownException;
+use Framework\Exception\KnownException;
+use League\Flysystem\FileExistsException;
+use League\Flysystem\FileNotFoundException;
+use League\Flysystem\Filesystem;
+use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
-class UploadApiAction extends ActionInterface
+class UploadApiAction extends Action
 {
 
     /**
-     * @var FilesTable
+     * @var Filesystem
      */
-    private $table;
+    private Filesystem $filesystem;
 
-    public function __construct(FilesTable $table)
+    public function __construct(Filesystem $filesystem)
     {
-        $this->table = $table;
+        $this->filesystem = $filesystem;
     }
-
 
     /**
      * @param ServerRequestInterface $request
-     * @return string
+     * @return ResponseInterface|string
      * @throws KnownException
      */
-    public function __invoke(ServerRequestInterface $request): string
+    public function __invoke(ServerRequestInterface $request)
     {
+
         $params = $request->getParsedBody();
 
         $chunk = isset($params["chunk"]) ? intval($params["chunk"]) : 1;
         $nbChunk = isset($params["nbChunk"]) ? intval($params["nbChunk"]) : 1;
 
-
         if (!isset($params["path"]) || empty($params["path"])) {
-            throw new KnownException(ERROR_PATH);
+            throw new KnownException(ERROR_REQUEST, "A file should have a path.");
         }
 
-
-        $path = $params["path"];
-
-        // value that shouldn't be hard coded
-        $length = isset($params["chunkSize"]) ? intval($params["chunkSize"]) : 64 * 1024;
-
-        $file = $this->table->makeQuery()
-            ->select('f.*')
-            ->where("f.path = ?")->params([$path])
-            ->fetch();
-
-        // get or generate uuid
-        if ($file) {
-            $uuid = $file->uuid;
-        } else {
-            $uuid = $this->gen_uuid();
-        }
-
-        // generate the upload path from uuid
-        $uploadDirectory = ROOT . '/files/' . $uuid;
+        // generate the upload path
 
         /** @var $files UploadedFile[] */
         $files = $request->getUploadedFiles();
 
         if (empty($files) || $files['blob']->getError()) {
-            throw new KnownException(ERROR_UPLOAD_FAILED);
+            throw new KnownException(ERROR_REQUEST, "File couldn't be uploaded.");
         }
 
         if ($chunk > $nbChunk) {
-            throw new KnownException(ERROR_TOO_BIG_CHUNK);
+            throw new KnownException(ERROR_REQUEST, "Chunk too big.");
         }
 
         if ($chunk <= 0 || $nbChunk <= 0) {
-            throw new KnownException(ERROR_MUST_BE_POSITIVE);
+            throw new KnownException(ERROR_REQUEST, "Chunk should be positive");
         }
 
         if ($chunk <= $nbChunk) {
-            $flag = $chunk === 1 ? 0 : FILE_APPEND;
-            file_put_contents($uploadDirectory, $files['blob']->getStream()->read($length), $flag);
-            $files['blob']->getStream()->close();
-
-            if (!isset($file) || empty($file)) {
-                $this->table->insert([
-                    'path' => $path,
-                    'uuid' => $uuid
-                ]);
+            $path = "1" . DIRECTORY_SEPARATOR . $params['path'];
+            // append content into the right file
+            foreach ($files as $file) {
+                try {
+                    if ($this->filesystem->has($path)) {
+                        $putStream = tmpfile();
+                        fwrite($putStream, $this->filesystem->read($path));
+                        fwrite($putStream, $file->getStream()->getContents());
+                        $this->filesystem->putStream($path, $putStream);
+                    } else {
+                        $this->filesystem->writeStream($path, fopen($file->getStream()->getMetadata('uri'), 'r+'));
+                    }
+                } catch (\Exception $e) {
+                    throw new KnownException(SERVER_ERROR); // we should never be in here (can happen if it crashes)
+                }
             }
-
-            throw new KnownException(ERROR_OK);
+            return new Response(204, [], "");
         }
-
-        throw new KnownException(ERROR_DEFAULT);
-    }
-
-    /**
-     * generate a v4 uuid
-     * @return string
-     */
-    private function gen_uuid(): string
-    {
-        return sprintf('%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
-
-            // 32 bits for "time_low"
-            mt_rand(0, 0xffff), mt_rand(0, 0xffff),
-
-            // 16 bits for "time_mid"
-            mt_rand(0, 0xffff),
-
-            // 16 bits for "time_hi_and_version",
-            // four most significant bits holds version number 4
-            mt_rand(0, 0x0fff) | 0x4000,
-
-            // 16 bits, 8 bits for "clk_seq_hi_res",
-            // 8 bits for "clk_seq_low",
-            // two most significant bits holds zero and one for variant DCE1.1
-            mt_rand(0, 0x3fff) | 0x8000,
-
-            // 48 bits for "node"
-            mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff)
-        );
-    }
-
-    /**
-     * Filter the parameters passed
-     * @param ServerRequestInterface $request
-     * @return array
-     */
-    protected function getParams(ServerRequestInterface $request): array
-    {
-        // TODO: Implement getParams() method.
+        throw new KnownException(UNKNOWN_ERROR);
     }
 }

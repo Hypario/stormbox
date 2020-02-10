@@ -12,7 +12,7 @@ class WebModule extends Module
 
     public function __construct(RendererInterface $renderer, Router $router)
     {
-        $renderer->addPath('web', __DIR__ . '/views');
+        $renderer->addPath(__DIR__ . '/views', 'web');
         $router->get('/', IndexAction::class);
     }
 

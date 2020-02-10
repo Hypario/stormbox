@@ -1,4 +1,4 @@
-const chunkSize = 2097152; // size of a chunked file
+const chunkSize = 4 * 10 ** 6; // size of a chunked file in MB
 const percent = document.getElementById("percent"); // where to show the percentage
 const dropForm = document.getElementById('drop');
 const dropInput = document.getElementById('fileinput');
@@ -55,17 +55,19 @@ function send(file, length = 64 * 1024, offset = 0) {
   const path = file.webkitRelativePath !== "" ? file.webkitRelativePath : file.name;
 
   const data = new FormData();
+
+  let csrf = document.querySelector('input[name="_csrf"]');
+
   // put everything in FormData type
   data.append('blob', file.slice(offset, length + offset));
   data.append('path', path);
   data.append('nbChunk', nbChunk);
   data.append('chunk', chunk);
-  data.append('chunkSize', length);
 
   // send the data to the server
   sendChunk(data).then(response => {
     // if the upload is a success and we have still chunks to do
-    if (response["Error"] === 0 && chunk < nbChunk) {
+    if (response.status === 204 && chunk < nbChunk) {
       offset += length;
       // send another chunk
       send(file, length, offset);
@@ -76,12 +78,10 @@ function send(file, length = 64 * 1024, offset = 0) {
 // send the data to the server
 async function sendChunk(data) {
 
-  const response = await fetch('/api/upload', {
+  return await fetch('/api/upload', {
     method: 'POST',
     body: data,
   });
-
-  return response.json();
 }
 
 // get the file using the data given

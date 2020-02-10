@@ -9,8 +9,19 @@ namespace Framework\Exception;
  */
 class KnownException extends \Exception
 {
-    public function __construct(int $code = 0)
+    private bool $json = false;
+
+    public function __construct(int $code = 0, ?string $message = null, bool $json = false)
     {
-        parent::__construct("", $code, null);
+        parent::__construct($message, $code, null);
+        $this->json = $json;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isJson(): bool
+    {
+        return $this->json;
     }
 }

@@ -2,11 +2,11 @@
 
 namespace App\WebModule\Actions;
 
-use Framework\ActionInterface;
+use Framework\Actions\Action;
 use Framework\Renderer\RendererInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
-class IndexAction extends ActionInterface
+class IndexAction extends Action
 {
 
     /**
@@ -22,15 +22,5 @@ class IndexAction extends ActionInterface
     public function __invoke(ServerRequestInterface $request): string
     {
         return $this->renderer->render('@web/index');
-    }
-
-    /**
-     * Filter the parameters passed
-     * @param ServerRequestInterface $request
-     * @return array
-     */
-    protected function getParams(ServerRequestInterface $request): array
-    {
-        return [];
     }
 }

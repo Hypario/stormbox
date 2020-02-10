@@ -2,9 +2,11 @@
 
 namespace Framework;
 
-use DI\ContainerBuilder;
 use Framework\Middlewares\CombinedMiddleware;
+use Framework\Middlewares\ExceptionHandlerMiddleware;
 use Framework\Middlewares\RoutePrefixedMiddleware;
+use Hypario\Builder;
+use Middlewares\Whoops;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -14,12 +16,10 @@ use Psr\Http\Server\RequestHandlerInterface;
 class App implements RequestHandlerInterface
 {
 
-    public $definition;
-
     /**
-     * @var string[]
+     * @var string|array|null
      */
-    public $middlewares = [];
+    private $definitions;
 
     /**
      * @var ContainerInterface
@@ -27,16 +27,20 @@ class App implements RequestHandlerInterface
     private $container;
 
     /**
-     * used to know what middleware to process
-     * @var int
+     * Array of modules
+     * @var string[]
      */
-    private $index = 0;
-
     private $modules = [];
 
-    public function __construct(string $definition)
+    /**
+     * Array of middlewares
+     * @var MiddlewareInterface[]
+     */
+    private $middlewares = [];
+
+    public function __construct($definitions = null)
     {
-        $this->definition = $definition;
+        $this->definitions = $definitions;
     }
 
     /**
@@ -50,11 +54,11 @@ class App implements RequestHandlerInterface
     }
 
     /**
-     * @param $middleware
+     * @param string|callable|MiddlewareInterface $middleware
      * @param string|null $routePrefix
      * @return App
      */
-    public function pipe($middleware, string $routePrefix = null): self
+    public function pipe($middleware, ?string $routePrefix = null): self
     {
         if (is_null($routePrefix)) {
             $this->middlewares[] = $middleware;
@@ -66,33 +70,40 @@ class App implements RequestHandlerInterface
 
     public function getContainer(): ContainerInterface
     {
-        if ($this->container === null) {
-            $builder = new ContainerBuilder();
-            $builder->addDefinitions($this->definition);
+        if (is_null($this->container)) {
+            $builder = new Builder();
+            if (!is_null($this->definitions)) {
+                $builder->addDefinitions($this->definitions);
+            }
+            foreach ($this->getModules() as $module) {
+                if ($module::DEFINITIONS) {
+                    $builder->addDefinitions($module::DEFINITIONS);
+                }
+            }
             $this->container = $builder->build();
         }
         return $this->container;
     }
 
     /**
-     * Handle the request and return a response.
+     * Handles a request and produces a response.
      *
+     * May call other collaborating code to generate the response.
      * @param ServerRequestInterface $request
-     *
      * @return ResponseInterface
      */
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
-        foreach ($this->getModules() as $module) {
+        // instantiate all the modules
+        foreach ($this->modules as $module) {
             $this->getContainer()->get($module);
         }
-
-        $middleware = new CombinedMiddleware($this->getContainer(), $this->getMiddlewares());
+        $middleware = new CombinedMiddleware($this->getContainer(), $this->middlewares);
         return $middleware->process($request, $this);
     }
 
     /**
-     * @return string[] | Module[]
+     * @return string[]
      */
     public function getModules(): array
     {
@@ -106,5 +117,4 @@ class App implements RequestHandlerInterface
     {
         return $this->middlewares;
     }
-
 }

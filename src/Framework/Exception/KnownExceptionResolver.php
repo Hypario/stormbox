@@ -26,7 +26,7 @@ class KnownExceptionResolver
      * @param int $code
      * @param string $message
      */
-    public function register(int $code, string $message)
+    public function register(int $code, ?string $message = null)
     {
         $this->knownErrors[$code] = $message;
     }

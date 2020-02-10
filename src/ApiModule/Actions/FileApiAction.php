@@ -3,123 +3,57 @@
 
 namespace App\ApiModule\Actions;
 
-
-use App\ApiModule\Tables\FilesTable;
-use Framework\ActionInterface;
-use App\ApiModule\Entity\File;
-use Framework\KnownException;
-use Framework\Structures\Node;
+use Exception;
+use Framework\Actions\Action;
+use Framework\Exception\KnownException;
 use Framework\Validator\Validator;
+use League\Flysystem\Filesystem;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
-class FileApiAction extends ActionInterface
+class FileApiAction extends Action
 {
 
     protected $params = ["path"];
-
     /**
-     * @var FilesTable
+     * @var Filesystem
      */
-    private $table;
+    private Filesystem $filesystem;
 
-    public function __construct(FilesTable $table)
+    public function __construct(Filesystem $filesystem)
     {
-        $this->table = $table;
+        $this->filesystem = $filesystem;
     }
 
     /**
      * @param ServerRequestInterface $request
      * @return ResponseInterface|string
-     * @throws \Exception
+     * @throws Exception
      */
     public function __invoke(ServerRequestInterface $request): string
     {
-        // it uses getParams to validate data
-        $validator = $this->getValidator($request);
+        $params = $this->getParams($request);
+        $validator = $this->getValidator($params);
 
         if (!$validator->isValid()) {
-            throw new KnownException(ERROR_PATH);
+            throw new KnownException(ERROR_REQUEST, "A file should have a path");
         }
 
-        $path = $this->getParams($request)['path'];
-
-        /** @var File[] $files */
-        $files = $this->table->makeQuery()
-            ->where('f.path LIKE ?')
-            ->params(["%$path%"])
-            ->fetchAll()->getAll();
+        $path = $params['path'];
 
         // return the tree json_encoded
-        return json_encode($this->getTree($files)->toArray());
-    }
 
-    /**
-     * Filter the parameters passed
-     * @param ServerRequestInterface $request
-     * @return array
-     */
-    protected function getParams(ServerRequestInterface $request): array
-    {
-        $params = $request->getParsedBody();
-
-        return array_filter($params, function ($key) {
-            return in_array($key, $this->params);
-        }, ARRAY_FILTER_USE_KEY);
-    }
-
-    protected function getValidator(ServerRequestInterface $request): Validator
-    {
-        return parent::getValidator($request)
-            ->required('path');
-    }
-
-    /**
-     * @param File[] $files
-     * @return Node
-     */
-    private function getTree(array $files): Node
-    {
-
-        $tree = new Node(['name' => '/', 'type' => 'dir']);
-
-        foreach ($files as $file) {
-
-            // get all the subfolder (if there is at least one)
-            $parts = explode('/', $file->path);
-
-            // get all the leaf (all the files at the end)
-            $leafPart = array_pop($parts);
-
-            // we need here the root of the tree (here is '/')
-            $parentNode = &$tree;
-
-            // add all the subfolders to the tree
-            foreach ($parts as $part) {
-
-                // add a subfolder as a node, in data we give the name and is_dir = true
-                $parentNode->addChildren(
-                    $part,
-                    new Node(
-                        ['name' => $part, 'type' => 'dir']
-                    )
-                );
-
-                // reference the next children (the next subfolder)
-                $parentNode = &$parentNode->childrens[$part];
-            }
-
-            // add the files
-            if (empty($parentNode->childrens[$leafPart])) {
-                $parentNode->addChildren(
-                    $leafPart,
-                    new Node(
-                        ['name' => $leafPart, 'type' => 'file']
-                    )
-                );
-            }
+        if ($this->filesystem->has($path)) {
+            var_dump($this->filesystem->get($path));
+            die();
         }
 
-        return $tree;
+        throw new KnownException(NOT_FOUND);
+    }
+
+    protected function getValidator(array $params): Validator
+    {
+        return parent::getValidator($params)
+            ->required('path');
     }
 }

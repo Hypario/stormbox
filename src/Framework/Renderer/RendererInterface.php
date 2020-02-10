@@ -6,18 +6,19 @@ interface RendererInterface
 {
 
     /**
-     * Permet de rajouter un chemin pour changer les vues
+     * Add a path to a dir of view
      *
-     * @param string $namespace
-     * @param null|string $path
+     * @param string $path
+     * @param $namespace
      */
-    public function addPath(string $namespace, ?string $path = null): void;
+    public function addPath(string $path, $namespace = null);
 
     /**
-     * Permet de rendre une vue
-     * Le chemin peut être préciser avec des namespaces rajoutés par le addPath()
-     * on crée un namespace en mettant un @ devant et termine par un /
-     * Exemples :
+     * Allow to render a vue
+     * The path can be precised with namespaces added via addPath()
+     * We create a namespace by adding a @ in front of the string and end with a /
+     * Examples :
+     *
      * $this->render('@blog/index.php');
      * $this->render('view');
      *
@@ -28,10 +29,10 @@ interface RendererInterface
     public function render(string $view, array $params = []): string;
 
     /**
-     * Permet de rajouter une variable globale à toute les vues
-     *
+     * Allow to add a global variable to all views
      * @param string $key
-     * @param mixed $value
+     * @param $value
      */
     public function addGlobal(string $key, $value): void;
+
 }

@@ -4,7 +4,7 @@
 namespace Framework\Database;
 
 
-use Framework\KnownException;
+use Framework\Exception\KnownException;
 use Psr\Container\ContainerInterface;
 
 class DatabaseFactory
@@ -29,7 +29,7 @@ class DatabaseFactory
             $pdo->exec("SET search_path TO {$c->get('database.schema')}");
             return $pdo;
         } catch (\PDOException $e) {
-            throw new KnownException(PDO_ERROR);
+            throw new KnownException(SERVER_ERROR);
         }
     }
 

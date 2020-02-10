@@ -1,57 +1,54 @@
 <?php
 
-
 namespace Framework\Renderer;
-
 
 class PHPRenderer implements RendererInterface
 {
 
-    const DEFAULT_NAMESPACE = '__MAIN';
-
     /**
-     * Enregistre tout les chemins vers les vues par Namespace
-     * la clé est le namespace et la valeur est le chemin vers la vue
-     * @var array
+     * @var string
      */
-    private $paths = [];
+    private $defaultPath;
 
     /**
-     * Variable gloablement accessible pour toutes les vues
+     * @var string[string]
+     */
+    private $namespacedPaths = [];
+
+    /**
      * @var array
      */
     private $globals = [];
 
     public function __construct(?string $defaultPath = null)
     {
-        if (!is_null($defaultPath)) {
+        if(!is_null($defaultPath)) {
             $this->addPath($defaultPath);
         }
     }
 
     /**
-     * Permet de rajouter un chemin pour changer les vues
+     * Add a path to a dir of view
      *
-     * @param string $namespace
-     * @param null|string $path
+     * @param string $path
+     * @param $namespace
+     * @return mixed
      */
-    public function addPath(string $namespace, ?string $path = null): void
+    public function addPath(string $path, $namespace = null)
     {
-        if (is_null($path)) {
-            // ici, tu fais une ref indirecte vers le namespace, tu te
-            // retrouve avec une data structure qui contient 2 données différentes
-            // avec le même type, hautement foireux donc.
-            $this->paths[self::DEFAULT_NAMESPACE] = $namespace;
+        if (is_null($namespace)) {
+            $this->defaultPath = $path;
         } else {
-            $this->paths[$namespace] = $path;
+            $this->namespacedPaths[$namespace] = $path;
         }
     }
 
     /**
-     * Permet de rendre une vue
-     * Le chemin peut être préciser avec des namespaces rajoutés par le addPath()
-     * on crée un namespace en mettant un @ devant et termine par un /
-     * Exemples :
+     * Allow to render a vue
+     * The path can be precised with namespaces added via addPath()
+     * We create a namespace by adding a @ in front of the string and end with a /
+     * Examples :
+     *
      * $this->render('@blog/index.php');
      * $this->render('view');
      *
@@ -64,7 +61,7 @@ class PHPRenderer implements RendererInterface
         if ($this->hasNamespace($view)) {
             $path = $this->replaceNamespace($view) . '.php';
         } else {
-            $path = $this->paths[self::DEFAULT_NAMESPACE] . DIRECTORY_SEPARATOR . $view . '.php';
+            $path = $this->defaultPath . DIRECTORY_SEPARATOR . $view . '.php';
         }
         ob_start();
         $renderer = $this;
@@ -75,10 +72,9 @@ class PHPRenderer implements RendererInterface
     }
 
     /**
-     * Permet de rajouter une variable globale à toute les vues
-     *
+     * Allow to add a global variable to all views
      * @param string $key
-     * @param mixed $value
+     * @param $value
      */
     public function addGlobal(string $key, $value): void
     {
@@ -87,17 +83,17 @@ class PHPRenderer implements RendererInterface
 
     private function hasNamespace(string $view): bool
     {
-        return $view[0] === '@';
+        return $view[0] == '@';
     }
 
     private function getNamespace(string $view): string
     {
-        return substr($view, 1, strpos($view, '/') - 1);
+        return substr($view, 1, strpos($view, '/') -1 );
     }
 
     private function replaceNamespace(string $view): string
     {
         $namespace = $this->getNamespace($view);
-        return str_replace('@' . $namespace, $this->paths[$namespace], $view);
+        return str_replace('@' . $namespace, $this->namespacedPaths[$namespace], $view);
     }
 }

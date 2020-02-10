@@ -3,13 +3,13 @@
 namespace App\ApiModule\Actions;
 
 use App\ApiModule\Tables\FilesTable;
+use Framework\Actions\Action;
 use Framework\Validator\Validator;
 use GuzzleHttp\Psr7\Response;
-use Framework\ActionInterface;
-use Framework\KnownException;
+use Framework\Exception\KnownException;
 use Psr\Http\Message\ServerRequestInterface;
 
-class DownloadApiAction extends ActionInterface
+class DownloadApiAction extends Action
 {
 
     /**
@@ -35,8 +35,11 @@ class DownloadApiAction extends ActionInterface
      */
     public function __invoke(ServerRequestInterface $request)
     {
+        /*
+        // filter params first
         $params = $this->getParams($request);
-        $validator = $this->getValidator($request);
+        // validate parameters
+        $validator = $this->getValidator($params);
         if (!$validator->isValid()) {
             throw new KnownException(ERROR_PATH);
         }
@@ -111,31 +114,12 @@ class DownloadApiAction extends ActionInterface
             return $response;
         }
         throw new KnownException(ERROR_FILE_DONT_EXIST);
+         */
     }
 
-    /**
-     * Filter the parameters passed
-     * @param ServerRequestInterface $request
-     * @return array
-     */
-    protected function getParams(ServerRequestInterface $request): array
+    protected function getValidator(array $params): Validator
     {
-        $params = $request->getParsedBody();
-
-        return array_filter($params, function ($key) {
-            return in_array($key, $this->params);
-        }, ARRAY_FILTER_USE_KEY);
-    }
-
-    /**
-     * return the validator with the given rules
-     * @param ServerRequestInterface $request
-     * @return Validator
-     */
-    protected function getValidator(ServerRequestInterface $request): Validator
-    {
-        return parent::getValidator($request)
-            ->required('path')
-            ->notEmpty('path');
+        return parent::getValidator($params)
+            ->required('path');
     }
 }

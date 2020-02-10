@@ -1,5 +1,5 @@
-.idea/
-build/
-files/
-vendor/
-config/config.php
+.idea/*
+vendor
+composer.lock
+.phpunit.result.cache
+tmp

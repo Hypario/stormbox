@@ -35,7 +35,16 @@ class ExceptionHandlerMiddleware implements MiddlewareInterface
         try {
             return $handler->handle($request);
         } catch (KnownException $e) {
-            return new Response($e->getCode() === 0 ? 200 : 500, [], "<h1>" . $this->resolver->getMessage($e->getCode()) . "</h1>");
+            if ($e->isJson()) {
+                return new Response($e->getCode(), [], json_encode(
+                        [
+                            "code" => $e->getCode(),
+                            "message" => $this->resolver->getMessage($e->getCode()) ?: $e->getMessage()
+                        ]
+                    )
+                );
+            }
+            return new Response($e->getCode(), [], "<h1>" . $this->resolver->getMessage($e->getCode()) ?: $e->getMessage() . "</h1>");
         }
     }
 }
