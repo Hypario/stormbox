@@ -2,11 +2,11 @@
 
 namespace App\AuthModule\Action;
 
-use Framework\Actions\ActionInterface;
+use Framework\Actions\Action;
 use Framework\Renderer\RendererInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
-class LoginAction extends ActionInterface {
+class LoginAction extends Action {
 
     /**
      * @var RendererInterface
@@ -24,13 +24,5 @@ class LoginAction extends ActionInterface {
     public function __invoke(ServerRequestInterface $request)
     {
         return $this->renderer->render('@auth/login');
-    }
-
-    /**
-     * @inheritDoc
-     */
-    protected function getParams(ServerRequestInterface $request): array
-    {
-        return [];
     }
 }

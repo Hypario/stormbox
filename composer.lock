@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e735c231bbad37fe858b788cab3c1091",
+    "content-hash": "cc4117769a07595b30d10bc1e6e94d81",
     "packages": [
         {
             "name": "filp/whoops",
@@ -266,6 +266,87 @@
             ],
             "description": "A little router for beginners in Object Oriented",
             "time": "2019-11-12T08:36:13+00:00"
+        },
+        {
+            "name": "keven/append-stream",
+            "version": "1.0.5",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/kevengodet/append-stream.git",
+                "reference": "fd0438f178d9708747c568f041879822d75068a6"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/kevengodet/append-stream/zipball/fd0438f178d9708747c568f041879822d75068a6",
+                "reference": "fd0438f178d9708747c568f041879822d75068a6",
+                "shasum": ""
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^7.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Keven\\AppendStream\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "mit"
+            ],
+            "authors": [
+                {
+                    "name": "Keven Godet",
+                    "email": "contact@keven.fr",
+                    "homepage": "http://keven.fr",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Append stream resources into a single stream to read from.",
+            "time": "2018-04-13T08:59:29+00:00"
+        },
+        {
+            "name": "keven/flysystem-concatenate",
+            "version": "1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/kevengodet/flysystem-concatenate.git",
+                "reference": "f7dee9e3e6f1ab4afe7f5a2644179a6f34b8c1cc"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/kevengodet/flysystem-concatenate/zipball/f7dee9e3e6f1ab4afe7f5a2644179a6f34b8c1cc",
+                "reference": "f7dee9e3e6f1ab4afe7f5a2644179a6f34b8c1cc",
+                "shasum": ""
+            },
+            "require": {
+                "keven/append-stream": "^1.0",
+                "league/flysystem": "^1.0"
+            },
+            "require-dev": {
+                "league/flysystem-vfs": "^1.0",
+                "phpunit/phpunit": "^7.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Keven\\Flysystem\\Concatenate\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "mit"
+            ],
+            "authors": [
+                {
+                    "name": "Keven Godet",
+                    "email": "contact@keven.fr",
+                    "homepage": "http://keven.fr",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Concatenation plugin for league/flysystem",
+            "time": "2018-04-05T08:35:19+00:00"
         },
         {
             "name": "league/flysystem",

@@ -1,31 +1,21 @@
 {% extends 'layout.twig' %}
 
 {% block body %}
-    <form action="/api/download" method="post">
-        <label for="path">Le nom du fichier / dossier que vous voulez télécharger</label>
-        <input type="text" name="path" id="path">
-        <button>Envoyer</button>
-    </form>
+    <div class="container">
+        <h1>Bienvenue sur stormbox !</h1>
 
-    <form action="/api/files" method="post" id="getFile">
-        <label for="tree">Le nom du fichier / dossier dont vous voulez voir le contenu</label>
-        <input type="text" name="path" id="tree">
-        <button>Envoyer</button>
-    </form>
+        <p>Stormbox est un logiciel d'upload et de téléchargement de fichier</p>
+        <p>Stormbox est respectueux de vos données mais nous pourrons être amené à vérifier et potentiellement supprimé
+            un fichier dans un cadre légal, voire désactiver votre compte.</p>
+        <p>Stormbox ce veux être un outil permettant le partage de donnée de manière sécurisé et sûr. Aucune donnée
+            utilisateur n'est récupéré ni transmis, mis à part le fichier uploadé ou téléchargé.</p>
 
-    <p>Prenez et déplacer votre fichier / dossier dans la zone pour l'upload</p>
-    <div class="row">
-        <div class="col-md-3">
-            <form action="" method="post" id="drop">
-                <div class="form-group files">
-                    <label for="fileinput" class="file-input">Upload your file</label>
-                    <input type="file" id="fileinput" multiple>
-                </div>
-            </form>
-        </div>
+        <a href="{{ path('auth.login') }}" class="btn btn-info">
+            Déjà un compte ?
+        </a>
+
+        <a href="{{ path('auth.logout') }}" class="btn btn-info">
+            S'inscrire
+        </a>
     </div>
-
-    <p id="percent"></p>
-
-    <script src="/js/app.js"></script>
 {% endblock %}

@@ -1,6 +1,8 @@
 <?php
 
 use App\ApiModule\ApiModule;
+use App\AuthModule\AuthModule;
+use App\AuthModule\ForbiddenMiddleware;
 use App\WebModule\WebModule;
 use Framework\App;
 use Framework\Middlewares\{CsrfMiddleware,
@@ -21,7 +23,8 @@ $app = new App(ROOT . '/config/config.php');
 
 $app
     ->addModule(WebModule::class)
-    ->addModule(ApiModule::class);
+    ->addModule(ApiModule::class)
+    ->addModule(AuthModule::class);
 
 $app
     ->pipe(
@@ -29,8 +32,8 @@ $app
             Whoops::class :
             ExceptionHandlerMiddleware::class
     )
+    ->pipe(ForbiddenMiddleware::class)
     ->pipe(MethodMiddleware::class)
-    ->pipe(CsrfMiddleware::class)
     ->pipe(RouterMiddleware::class)
     ->pipe(DispatcherMiddleware::class)
     ->pipe(NotFoundMiddleware::class);

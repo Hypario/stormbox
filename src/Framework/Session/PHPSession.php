@@ -8,7 +8,7 @@ class PHPSession implements \ArrayAccess, SessionInterface
     /**
      * ensure the session started
      */
-    private function ensureStarted()
+    public function ensureStarted()
     {
         if (session_status() === PHP_SESSION_NONE) {
             session_start();

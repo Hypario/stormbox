@@ -6,6 +6,7 @@ $resolver = $app->getContainer()->get(KnownExceptionResolver::class);
 
 define('SERVER_ERROR', 500);
 define('NOT_FOUND', 404);
+define("FORBIDDEN", 403);
 define('ERROR_REQUEST', 400);
 define('UNKNOWN_ERROR', 520);
 

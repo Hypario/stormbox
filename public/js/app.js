@@ -56,13 +56,11 @@ function send(file, length = 64 * 1024, offset = 0) {
 
   const data = new FormData();
 
-  let csrf = document.querySelector('input[name="_csrf"]');
-
   // put everything in FormData type
-  data.append('blob', file.slice(offset, length + offset));
   data.append('path', path);
   data.append('nbChunk', nbChunk);
   data.append('chunk', chunk);
+  data.append('blob', file.slice(offset, length + offset));
 
   // send the data to the server
   sendChunk(data).then(response => {

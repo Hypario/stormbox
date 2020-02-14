@@ -6,15 +6,13 @@ namespace App\AuthModule\Action;
 
 use App\AuthModule\DatabaseAuth;
 use App\Framework\Response\RedirectResponse;
-use Framework\Actions\ActionInterface;
-use Framework\Actions\RouterAwareAction;
-use Framework\Session\FlashService;
-use Framework\Session\SessionInterface;
+use Framework\Actions\{Action, RouterAwareAction};
+use Framework\Session\{FlashService, SessionInterface};
 use Framework\Validator\Validator;
 use Hypario\Router\Router;
 use Psr\Http\Message\ServerRequestInterface;
 
-class LoginAttemptAction extends ActionInterface
+class LoginAttemptAction extends Action
 {
 
     protected $params = ["username", 'password'];
@@ -22,7 +20,7 @@ class LoginAttemptAction extends ActionInterface
     /**
      * @var DatabaseAuth
      */
-    private $auth;
+    private DatabaseAuth $auth;
     /**
      * @var SessionInterface
      */
@@ -47,29 +45,22 @@ class LoginAttemptAction extends ActionInterface
     public function __invoke(ServerRequestInterface $request)
     {
         $params = $this->getParams($request);
-        if (!$this->getValidator($request)->isValid()) {
+        if ($this->getValidator($params)->isValid()) {
             $user = $this->auth->login($params['username'], $params['password']);
             if ($user) {
-                $path = $this->session->get('auth.redirect') ?: $this->router->getPath('/');
+                $path = $this->session->get('auth.redirect') ?: $this->router->getPath('index');
                 $this->session->delete('auth.redirect');
+                (new FlashService($this->session))->success("Vous êtes maintenant connecté.");
                 return new RedirectResponse($path);
             }
         }
-        (new FlashService($this->session))->error("Identifiant ou mot de passe incorrect");
+        (new FlashService($this->session))->error("Identifiant ou mot de passe incorrect.");
         return $this->redirect('auth.login');
     }
 
-    /**
-     * @inheritDoc
-     */
-    protected function getParams(ServerRequestInterface $request): array
+    protected function getValidator(array $params): Validator
     {
-        return array_filter($request->getParsedBody(), fn ($key) => in_array($key, $this->params), ARRAY_FILTER_USE_KEY);
-    }
-
-    protected function getValidator(ServerRequestInterface $request): Validator
-    {
-        return parent::getValidator($request)
+        return parent::getValidator($params)
             ->required('username')
             ->required('password');
     }
