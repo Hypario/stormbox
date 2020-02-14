@@ -4,13 +4,11 @@
 namespace App\ApiModule\Actions;
 
 
-use App\ApiModule\utils\append_filter;
 use App\AuthModule\DatabaseAuth;
 use Framework\Actions\Action;
 use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Psr7\UploadedFile;
 use Framework\Exception\KnownException;
-use Keven\AppendStream\AppendStream;
 use League\Flysystem\FileExistsException;
 use League\Flysystem\FileNotFoundException;
 use League\Flysystem\Filesystem;
@@ -118,10 +116,11 @@ class UploadApiAction extends Action
     private function write(string $path, UploadedFile $file, bool $update = false)
     {
         if ($update) {
-            // append to file or merge two streams
+            // append to file
             $tmp = tmpfile();
             fwrite($tmp, fread($backup = $this->filesystem->readStream($path), $this->filesystem->getSize($path)));
             fwrite($tmp, $file->getStream()->getContents());
+
             $this->filesystem->updateStream($path, $tmp);
 
             fclose($tmp);
