@@ -5,6 +5,10 @@
     <div class="container">
         <h1>Mon compte</h1>
 
+        {% if (user.totp_key is null) %}
+            <a href="{{ path('auth.totp') }}" class="btn btn-primary">Activer l'authentification à double facteur</a>
+        {% endif %}
+
         <form action="" method="post">
             {{ field('username', user.username, "Nom d'utilisateur") }}
             {{ field('email', user.email, 'Votre adresse email', {type: "email"}) }}

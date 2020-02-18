@@ -1,0 +1,19 @@
+{% extends 'layout.twig' %}
+
+{% block body %}
+    <div class="container">
+
+        <h1>Activer l'authentification à double facteur</h1>
+
+        <p>Nous vous conseillons l'application Authy afin de gérez votre code d'authentification à double facteur.</p>
+
+        <p>
+            <img src="{{ QrCodeUrl }}" alt="QrCode à scanner">
+        </p>
+
+        <form action="" method="post">
+            {{ field('code', null, "Code") }}
+            <button class="btn btn-primary">Envoyer</button>
+        </form>
+    </div>
+{% endblock %}

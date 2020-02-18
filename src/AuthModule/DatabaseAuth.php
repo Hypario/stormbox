@@ -40,7 +40,6 @@ class DatabaseAuth implements Auth
 
         $user = $this->userTable->findBy('username', $username);
         if ($user && password_verify($password, $user->password)) {
-            $this->setUser($user);
             return $user;
         }
         return null;

@@ -48,10 +48,16 @@ class LoginAttemptAction extends Action
         if ($this->getValidator($params)->isValid()) {
             $user = $this->auth->login($params['username'], $params['password']);
             if ($user) {
-                $path = $this->session->get('auth.redirect') ?: $this->router->getPath('index');
-                $this->session->delete('auth.redirect');
-                (new FlashService($this->session))->success("Vous êtes maintenant connecté.");
-                return new RedirectResponse($path);
+                if (!is_null($user->totpKey)) {
+                    $this->session->set('user_id', $user->id);
+                    return new RedirectResponse($this->router->getPath('auth.loginTotp'));
+                } else {
+                    $this->auth->setUser($user);
+                    $path = $this->session->get('auth.redirect') ?: $this->router->getPath('index');
+                    $this->session->delete('auth.redirect');
+                    (new FlashService($this->session))->success("Vous êtes maintenant connecté.");
+                    return new RedirectResponse($path);
+                }
             }
         }
         (new FlashService($this->session))->error("Identifiant ou mot de passe incorrect.");

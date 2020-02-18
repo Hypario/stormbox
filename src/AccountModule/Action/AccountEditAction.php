@@ -18,7 +18,7 @@ use Psr\Http\Message\ServerRequestInterface;
 class AccountEditAction extends Action
 {
 
-    protected $params = ['username', 'email', 'password', 'password_confirm'];
+    protected $params = ['email', 'password', 'password_confirm'];
 
     /**
      * @var Auth

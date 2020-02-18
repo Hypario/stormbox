@@ -8,6 +8,7 @@ class User implements \Framework\Auth\User {
     public $username;
     public $email;
     public $password;
+    public $totpKey;
 
     /**
      * @inheritDoc

@@ -1,0 +1,16 @@
+{% extends 'layout.twig' %}
+
+{% block body %}
+
+    <div class="container">
+
+        <h1>Authentification à double facteur.</h1>
+
+        <form action="" method="post">
+            {{ field('code', null, "Code") }}
+            <button class="btn btn-primary">Envoyer</button>
+        </form>
+
+    </div>
+
+{% endblock %}

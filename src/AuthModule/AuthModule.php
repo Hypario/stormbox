@@ -6,8 +6,10 @@ namespace App\AuthModule;
 
 use App\AuthModule\Action\LoginAction;
 use App\AuthModule\Action\LoginAttemptAction;
+use App\AuthModule\Action\LoginTotpAction;
 use App\AuthModule\Action\LogoutAction;
 use App\AuthModule\Action\SignupAction;
+use App\AuthModule\Action\TotpAction;
 use Framework\Module;
 use Framework\Renderer\RendererInterface;
 use Hypario\Router\Router;
@@ -27,10 +29,16 @@ class AuthModule extends Module
         $renderer->addPath(__DIR__ . '/views', 'auth');
         $router->get($container->get('auth.login'), LoginAction::class, 'auth.login');
         $router->post($container->get('auth.login'), LoginAttemptAction::class);
+
         $router->post($container->get('auth.logout'), LogoutAction::class, 'auth.logout');
+
         $router->get($container->get('auth.register'), SignupAction::class, 'auth.register');
         $router->post($container->get('auth.register'), SignupAction::class);
-        // routes to sign in, sign up and logout
+
+        $router->get($container->get('auth.totp'), TotpAction::class, 'auth.totp');
+        $router->post($container->get('auth.totp'), TotpAction::class);
+        $router->get($container->get('auth.loginTotp'), LoginTotpAction::class, "auth.loginTotp");
+        $router->post($container->get('auth.loginTotp'), LoginTotpAction::class);
     }
 
 }
