@@ -10,12 +10,14 @@
         <p>Stormbox ce veux être un outil permettant le partage de donnée de manière sécurisé et sûr. Aucune donnée
             utilisateur n'est récupéré ni transmis, mis à part le fichier uploadé ou téléchargé.</p>
 
-        <a href="{{ path('auth.login') }}" class="btn btn-info">
-            Déjà un compte ?
-        </a>
+        {% if has('auth.login') and has('auth.register') %}
+            <a href="{{ path('auth.login') }}" class="btn btn-info">
+                Déjà un compte ?
+            </a>
 
-        <a href="{{ path('auth.logout') }}" class="btn btn-info">
-            S'inscrire
-        </a>
+            <a href="{{ path('auth.register') }}" class="btn btn-info">
+                S'inscrire
+            </a>
+        {% endif %}
     </div>
 {% endblock %}

@@ -1,5 +1,6 @@
 <?php
 
+use App\AccountModule\AccountModule;
 use App\ApiModule\ApiModule;
 use App\AuthModule\AuthModule;
 use App\AuthModule\ForbiddenMiddleware;
@@ -10,7 +11,8 @@ use Framework\Middlewares\{CsrfMiddleware,
     ExceptionHandlerMiddleware,
     MethodMiddleware,
     RouterMiddleware,
-    NotFoundMiddleware};
+    NotFoundMiddleware
+};
 use GuzzleHttp\Psr7\ServerRequest;
 use function Http\Response\send;
 use Middlewares\Whoops;
@@ -24,7 +26,8 @@ $app = new App(ROOT . '/config/config.php');
 $app
     ->addModule(WebModule::class)
     ->addModule(ApiModule::class)
-    ->addModule(AuthModule::class);
+    ->addModule(AuthModule::class)
+    ->addModule(AccountModule::class);
 
 $app
     ->pipe(

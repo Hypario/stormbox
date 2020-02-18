@@ -7,6 +7,7 @@ namespace App\AuthModule;
 use App\AuthModule\Action\LoginAction;
 use App\AuthModule\Action\LoginAttemptAction;
 use App\AuthModule\Action\LogoutAction;
+use App\AuthModule\Action\SignupAction;
 use Framework\Module;
 use Framework\Renderer\RendererInterface;
 use Hypario\Router\Router;
@@ -27,6 +28,8 @@ class AuthModule extends Module
         $router->get($container->get('auth.login'), LoginAction::class, 'auth.login');
         $router->post($container->get('auth.login'), LoginAttemptAction::class);
         $router->post($container->get('auth.logout'), LogoutAction::class, 'auth.logout');
+        $router->get($container->get('auth.register'), SignupAction::class, 'auth.register');
+        $router->post($container->get('auth.register'), SignupAction::class);
         // routes to sign in, sign up and logout
     }
 

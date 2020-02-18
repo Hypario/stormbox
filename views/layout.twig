@@ -10,11 +10,26 @@
 </head>
 <body>
 
-<header>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-        <a class="navbar-brand" href="/">Stormbox</a>
-    </nav>
-</header>
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <a class="navbar-brand" href="/">Stormbox</a>
+    {% if hasModule('AuthModule') and current_user() %}
+        <span class="navbar-text">Connecté en tant que {{ current_user().username }}</span>
+        <form method="post" action="{{ path('auth.logout') }}">
+            <button class="btn btn-danger">Me déconnecter</button>
+        </form>
+    {% else %}
+        <div class="navbar-nav">
+            <div class="nav-item active">
+                <a class="nav-link" href="{{ path('auth.login') }}">Se connecter</a>
+            </div>
+
+            <div class="nav-item active">
+                <a class="nav-link" href="{{ path('auth.register') }}">S'inscrire</a>
+            </div>
+        </div>
+    {% endif %}
+
+</nav>
 
 {% if flash('success') %}
     <div class="alert alert-success">

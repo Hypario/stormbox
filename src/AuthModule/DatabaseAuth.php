@@ -15,13 +15,16 @@ class DatabaseAuth implements Auth
     /**
      * @var UserTable
      */
-    private $userTable;
+    private UserTable $userTable;
     /**
      * @var SessionInterface
      */
-    private $session;
+    private SessionInterface $session;
 
-    private $user;
+    /**
+     * @var User
+     */
+    private ?User $user = null;
 
     public function __construct(UserTable $userTable, SessionInterface $session)
     {
@@ -35,7 +38,6 @@ class DatabaseAuth implements Auth
             return null;
         }
 
-        /** @var User $user */
         $user = $this->userTable->findBy('username', $username);
         if ($user && password_verify($password, $user->password)) {
             $this->setUser($user);
@@ -65,12 +67,14 @@ class DatabaseAuth implements Auth
         return null;
     }
 
-    public function setUser(User $user): void {
+    public function setUser(User $user): void
+    {
         $this->session->set('auth.user', $user->id);
         $this->user = $user;
     }
 
-    public function logout() {
+    public function logout()
+    {
         $this->session->delete('auth.user');
     }
 }

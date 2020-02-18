@@ -1,5 +1,6 @@
 <?php
 
+use App\AuthModule\AuthTwigExtension;
 use App\AuthModule\DatabaseAuth;
 use Framework\Auth\Auth;
 use Framework\Cookie\{CookieInterface, PHPCookie};
@@ -11,7 +12,7 @@ use League\Flysystem\Filesystem;
 use Psr\Container\ContainerInterface;
 use Framework\Renderer\{RendererInterface, TwigRendererFactory};
 use Framework\Session\{PHPSession, SessionInterface};
-use Framework\TwigExtensions\{FlashExtension, RouterTwigExtension, CsrfExtension, FormExtension};
+use Framework\TwigExtensions\{FlashExtension, ModuleExtension, RouterTwigExtension, CsrfExtension, FormExtension};
 
 use function Hypario\{
     factory, object
@@ -31,7 +32,9 @@ return [
     'twig.extensions' => [
         RouterTwigExtension::class,
         FlashExtension::class,
-        FormExtension::class
+        FormExtension::class,
+        AuthTwigExtension::class,
+        ModuleExtension::class
     ],
 
     RendererInterface::class => factory(TwigRendererFactory::class),

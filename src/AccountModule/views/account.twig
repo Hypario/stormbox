@@ -1,0 +1,19 @@
+{% extends 'layout.twig' %}
+
+{% block body %}
+
+    <div class="container">
+        <h1>Mon compte</h1>
+
+        <form action="" method="post">
+            {{ field('username', user.username, "Nom d'utilisateur") }}
+            {{ field('email', user.email, 'Votre adresse email', {type: "email"}) }}
+
+            <h2>Changer de mot de passe</h2>
+            {{ field('password', null, 'Mot de passe', {type: 'password'}) }}
+            {{ field('password_confirm', null, 'Confirmer le mot de passe', {type: 'password'}) }}
+            <button class="btn btn-primary">Modifier mes informations</button>
+        </form>
+    </div>
+
+{% endblock %}

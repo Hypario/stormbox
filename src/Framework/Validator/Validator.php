@@ -4,6 +4,8 @@ namespace Framework\Validator;
 
 
 use App\Framework\Validator\ValidationError;
+use Framework\Database\Table;
+use PDO;
 
 class Validator
 {
@@ -115,10 +117,10 @@ class Validator
     /**
      * @param string $key
      * @param string $table
-     * @param \PDO $pdo
+     * @param PDO $pdo
      * @return Validator
      */
-    public function exists(string $key, string $table, \PDO $pdo): self
+    public function exists(string $key, string $table, PDO $pdo): self
     {
         $value = $this->getValue($key);
         $statement = $pdo->prepare("SELECT id FROM {$table} WHERE id = ?");
@@ -133,11 +135,11 @@ class Validator
      * Vérifie que la clef est unique
      * @param string $key
      * @param string|Table $table
-     * @param \PDO $pdo
+     * @param PDO $pdo
      * @param int|null $exclude
      * @return Validator
      */
-    public function unique(string $key, $table, ?\PDO $pdo = null, ?int $exclude = null): self
+    public function unique(string $key, $table, ?PDO $pdo = null, ?int $exclude = null): self
     {
         if ($table instanceof Table) {
             $pdo = $table->getPdo();
