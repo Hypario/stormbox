@@ -5,8 +5,13 @@
     <div class="container">
         <h1>Mon compte</h1>
 
-        {% if (user.totp_key is null) %}
+        {% if (user.totpKey is null) %}
             <a href="{{ path('auth.totp') }}" class="btn btn-primary">Activer l'authentification à double facteur</a>
+        {% else %}
+            <form action="{{ path('auth.distotp') }}" method="post">
+                <input type="hidden" name="_method" value="DELETE">
+                <button class="btn btn-danger">Désactiver l'authentification à double facteur</button>
+            </form>
         {% endif %}
 
         <form action="" method="post">

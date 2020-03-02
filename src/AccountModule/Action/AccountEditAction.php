@@ -56,7 +56,6 @@ class AccountEditAction extends Action
 
         if ($validator->isValid()) {
             $userParams = [
-                'email' => $params['email'] !== $user->email ? $params['email'] : $user->email,
                 'password' => password_hash($params['password'], PASSWORD_ARGON2ID)
             ];
 

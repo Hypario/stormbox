@@ -37,6 +37,9 @@ class AuthModule extends Module
 
         $router->get($container->get('auth.totp'), TotpAction::class, 'auth.totp');
         $router->post($container->get('auth.totp'), TotpAction::class);
+
+        $router->delete($container->get('auth.distotp'), TotpAction::class, 'auth.distotp');
+
         $router->get($container->get('auth.loginTotp'), LoginTotpAction::class, "auth.loginTotp");
         $router->post($container->get('auth.loginTotp'), LoginTotpAction::class);
     }

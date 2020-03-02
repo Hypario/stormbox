@@ -13,10 +13,12 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
     <a class="navbar-brand" href="/">Stormbox</a>
     {% if hasModule('AuthModule') and current_user() %}
-        <span class="navbar-text">Connecté en tant que {{ current_user().username }}</span>
-        <form method="post" action="{{ path('auth.logout') }}">
-            <button class="btn btn-danger">Me déconnecter</button>
-        </form>
+        <div class="btn-group">
+            <a href="{{ path('profile') }}" class="btn btn-secondary">Mon compte</a>
+            <form method="post" action="{{ path('auth.logout') }}">
+                <button class="btn btn-danger">Me déconnecter</button>
+            </form>
+        </div>
     {% else %}
         <div class="navbar-nav">
             <div class="nav-item active">
