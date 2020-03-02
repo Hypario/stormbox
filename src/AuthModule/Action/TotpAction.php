@@ -76,7 +76,7 @@ class TotpAction extends Action
         $secret = GoogleAuthenticator::generateRandom();
 
         $this->session->set('secret', $secret);
-        $QrCodeUrl = GoogleAuthenticator::getQrCodeUrl('totp', "Connexion à stormbox", $secret);
+        $QrCodeUrl = GoogleAuthenticator::getQrCodeUrl('totp', "Stormbox", $secret);
 
         return $this->renderer->render('@auth/totp', compact('QrCodeUrl'));
     }
