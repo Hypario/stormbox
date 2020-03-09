@@ -4,6 +4,7 @@ namespace App\AccountModule;
 
 use App\AccountModule\Action\AccountAction;
 use App\AccountModule\Action\AccountEditAction;
+use App\AccountModule\Action\TotpBackupAction;
 use Framework\Auth\LoggedInMiddleware;
 use Framework\Module;
 use Framework\Renderer\RendererInterface;
@@ -17,6 +18,8 @@ class AccountModule extends Module
         $renderer->addPath(__DIR__ . '/views', 'account');
         $router->get('/profile', [LoggedInMiddleware::class, AccountAction::class], 'profile');
         $router->post('/profile', [LoggedInMiddleware::class, AccountEditAction::class]);
+
+        $router->get('/totp/backup', [LoggedInMiddleware::class, TotpBackupAction::class], 'genBackupTotp');
     }
 
 }

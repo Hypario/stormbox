@@ -1,0 +1,25 @@
+{% extends 'layout.twig' %}
+
+{% block body %}
+
+    <h1>Codes de backups</h1>
+
+    <p>Si vous perdez votre téléphone ou l'accès à votre code à utilisation unique, chacun de ces codes peuvent être
+        utilisé qu'une seul fois pour avoir accès à votre compte. Veuillez les conserver soigneusement, ou vous perdrez
+        accès à votre compte.</p>
+
+    <div class="codes">
+        <ul>
+            {% for code in codes %}
+                <li>{{ code }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <div class="btn btn-group">
+        <a href="{{ path('index') }}" class="btn btn-primary">Ok</a>
+        <a href="data:text/plain;charset=utf-8,{{ codes | join('\n') | url_encode }}"
+           download="stormbox-recovery-codes.txt" class="btn btn-secondary">Télécharger les codes</a>
+    </div>
+
+{% endblock %}

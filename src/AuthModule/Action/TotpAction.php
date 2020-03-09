@@ -3,6 +3,8 @@
 namespace App\AuthModule\Action;
 
 use App\AuthModule\DatabaseAuth;
+use App\AuthModule\TotpBackupGenerator;
+use App\AuthModule\TotpBackupTable;
 use App\AuthModule\UserTable;
 use App\Framework\Response\RedirectResponse;
 use Framework\Actions\Action;
@@ -19,6 +21,18 @@ class TotpAction extends Action
 {
 
     protected $params = ['code'];
+
+    /**
+     * Where to redirect when success
+     * @var string
+     */
+    private string $redirectTo = "/";
+
+    /**
+     * Where to redirect when Totp is checked
+     * @var string
+     */
+    private string $redirectCheckTotp = "/totp/backup";
 
     /**
      * @var RendererInterface
@@ -40,13 +54,23 @@ class TotpAction extends Action
      * @var UserTable
      */
     private UserTable $userTable;
+    /**
+     * @var TotpBackupGenerator
+     */
+    private TotpBackupGenerator $backupGenerator;
+    /**
+     * @var TotpBackupTable
+     */
+    private TotpBackupTable $backupTable;
 
     public function __construct(
         RendererInterface $renderer,
         SessionInterface $session,
         FlashService $flash,
         DatabaseAuth $auth,
-        UserTable $userTable
+        UserTable $userTable,
+        TotpBackupGenerator $backupGenerator,
+        TotpBackupTable $backupTable
     )
     {
         $this->renderer = $renderer;
@@ -54,6 +78,8 @@ class TotpAction extends Action
         $this->flash = $flash;
         $this->auth = $auth;
         $this->userTable = $userTable;
+        $this->backupGenerator = $backupGenerator;
+        $this->backupTable = $backupTable;
     }
 
     /**
@@ -86,14 +112,27 @@ class TotpAction extends Action
         if ($user = $this->auth->getUser()) {
             $this->userTable->update($user->id, ['totp_key' => null]);
 
+            // delete all backup code
+            $backup = $this->backupTable->findAllBy('user_id', $user->id)->getAll();
+
+            if (!empty($backup)) {
+                foreach ($backup as $code) {
+                    $this->backupTable->delete($code->id);
+                }
+            }
+
             $this->flash->success("L'authentification à double facteur a bien été désactivée.");
-            return new RedirectResponse("/");
+            return new RedirectResponse($this->redirectTo);
         }
         $this->flash->error("Vous devez être connecté pour désactiver l'authentification à double facteur.");
-        return new RedirectResponse("/");
+        return new RedirectResponse($this->redirectTo);
     }
 
-    private function checkTotp(ServerRequestInterface $request): ResponseInterface
+    /**
+     * @param ServerRequestInterface $request
+     * @return RedirectResponse|string
+     */
+    private function checkTotp(ServerRequestInterface $request)
     {
         $otp = new Otp();
         $params = $this->getParams($request);
@@ -107,7 +146,7 @@ class TotpAction extends Action
             $this->session->delete('secret');
 
             $this->flash->success("L'authentification à double facteur a bien été activée.");
-            return new RedirectResponse("/");
+            return new RedirectResponse($this->redirectCheckTotp);
         } else {
             $this->flash->error("Le code ne correspond pas.");
             return new RedirectResponse($request->getUri()->getPath());

@@ -8,10 +8,16 @@
         {% if (user.totpKey is null) %}
             <a href="{{ path('auth.totp') }}" class="btn btn-primary">Activer l'authentification à double facteur</a>
         {% else %}
-            <form action="{{ path('auth.distotp') }}" method="post">
-                <input type="hidden" name="_method" value="DELETE">
-                <button class="btn btn-danger">Désactiver l'authentification à double facteur</button>
-            </form>
+            <div class="btn-group">
+                <form action="{{ path('auth.distotp') }}" method="post">
+                    <input type="hidden" name="_method" value="DELETE">
+                    <button class="btn btn-danger">Désactiver l'authentification à double facteur</button>
+                </form>
+
+                <form action="{{ path('genBackupTotp') }}" method="post">
+                    <button class="btn btn-primary">Regénérer des codes de récupération</button>
+                </form>
+            </div>
         {% endif %}
 
         <form action="" method="post">

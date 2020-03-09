@@ -10,6 +10,8 @@ use App\AuthModule\Action\LoginTotpAction;
 use App\AuthModule\Action\LogoutAction;
 use App\AuthModule\Action\SignupAction;
 use App\AuthModule\Action\TotpAction;
+use App\AuthModule\Action\TotpBackupAction;
+use Framework\Auth\LoggedInMiddleware;
 use Framework\Module;
 use Framework\Renderer\RendererInterface;
 use Hypario\Router\Router;

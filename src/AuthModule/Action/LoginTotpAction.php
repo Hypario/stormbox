@@ -3,9 +3,11 @@
 namespace App\AuthModule\Action;
 
 use App\AuthModule\DatabaseAuth;
+use App\AuthModule\TotpBackupTable;
 use App\AuthModule\UserTable;
 use App\Framework\Response\RedirectResponse;
 use Framework\Actions\Action;
+use Framework\Auth\User;
 use Framework\Exception\KnownException;
 use Framework\Renderer\RendererInterface;
 use Framework\Session\FlashService;
@@ -45,6 +47,10 @@ class LoginTotpAction extends Action
      * @var FlashService
      */
     private FlashService $flash;
+    /**
+     * @var TotpBackupTable
+     */
+    private TotpBackupTable $backupTable;
 
     public function __construct(
         SessionInterface $session,
@@ -52,7 +58,8 @@ class LoginTotpAction extends Action
         RendererInterface $renderer,
         UserTable $userTable,
         DatabaseAuth $auth,
-        FlashService $flash
+        FlashService $flash,
+        TotpBackupTable $backupTable
     )
     {
         $this->session = $session;
@@ -61,6 +68,7 @@ class LoginTotpAction extends Action
         $this->userTable = $userTable;
         $this->auth = $auth;
         $this->flash = $flash;
+        $this->backupTable = $backupTable;
     }
 
     /**
@@ -79,14 +87,34 @@ class LoginTotpAction extends Action
             $user = $this->userTable->find($this->session->get('user_id'));
 
             if ($otp->checkTotp(Encoding::base32DecodeUpper($user->totpKey), $params['code'])) {
-                $this->auth->setUser($user);
-                $this->flash->success("Vous êtes maintenant connecté.");
-                return new RedirectResponse("/");
+                return $this->login($user);
+            } elseif ($this->checkBackupCode($params['code'], $user->id)) {
+                return $this->login($user);
             } else {
                 $this->flash->error("Code incorrect");
                 return new RedirectResponse($this->router->getPath("auth.loginTotp"));
             }
         }
         return $this->renderer->render('@auth/login_totp');
+    }
+
+    private function login(User $user): ResponseInterface
+    {
+        $this->auth->setUser($user);
+        $this->flash->success("Vous êtes maintenant connecté.");
+        return new RedirectResponse("/");
+    }
+
+    private function checkBackupCode(string $code, int $userId): bool
+    {
+        $backupCodes = $this->backupTable->findAllBy('user_id', $userId);
+
+        foreach ($backupCodes->getAll() as $backupCode) {
+            if ($backupCode->hash === $code) {
+                $this->backupTable->delete($backupCode->id);
+                return true;
+            }
+        }
+        return false;
     }
 }

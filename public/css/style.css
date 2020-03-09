@@ -56,3 +56,8 @@
     text-transform: capitalize;
     text-align: center;
 }
+
+.codes {
+    border: 1px solid #dfdfdf;
+    border-radius: 0.25rem;
+}
