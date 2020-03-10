@@ -14,9 +14,7 @@
                     <button class="btn btn-danger">Désactiver l'authentification à double facteur</button>
                 </form>
 
-                <form action="{{ path('genBackupTotp') }}" method="post">
-                    <button class="btn btn-primary">Regénérer des codes de récupération</button>
-                </form>
+                <a href="{{ path('genBackupTotp') }}" class="btn btn-primary">Regénérer des codes de récupération</a>
             </div>
         {% endif %}
 

@@ -110,7 +110,7 @@ class LoginTotpAction extends Action
         $backupCodes = $this->backupTable->findAllBy('user_id', $userId);
 
         foreach ($backupCodes->getAll() as $backupCode) {
-            if ($backupCode->hash === $code) {
+            if ($backupCode->hash === hash("sha256", $code)) {
                 $this->backupTable->delete($backupCode->id);
                 return true;
             }

@@ -49,7 +49,7 @@ class TotpBackupGenerator
             $backupCodes[] = $code;
             $this->backupTable->insert([
                 "user_id" => $userId,
-                "hash" => $code // hash("sha256", $code)
+                "hash" => hash("sha256", $code)
             ]);
         }
 
