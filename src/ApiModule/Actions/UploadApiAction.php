@@ -75,10 +75,17 @@ class UploadApiAction extends Action
         }
 
         if ($chunk <= $nbChunk) {
+
             $path = $this->auth->getUser()->id . DIRECTORY_SEPARATOR . $params['path'];
             $file = $files['blob'];
 
             if (is_null($this->filesystem)) {
+                $userUploadDir = $this->container->get('uploadDirectory') . DIRECTORY_SEPARATOR . $this->auth->getUser()->id;
+
+                if (!is_dir($userUploadDir)) {
+                    mkdir($userUploadDir, 0755, true);
+                }
+                
                 $flag = $chunk === 1 ? 0 : FILE_APPEND;
                 file_put_contents(
                     $this->container->get('uploadDirectory') . DIRECTORY_SEPARATOR . $path,

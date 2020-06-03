@@ -1,4 +1,4 @@
-const chunkSize = 4 * 10 ** 6; // size of a chunked file in MB
+const chunkSize = 2 * 10 ** 6; // size of a chunked file in MB
 const percent = document.getElementById("percent"); // where to show the percentage
 const dropForm = document.getElementById('drop');
 const dropInput = document.getElementById('fileinput');
