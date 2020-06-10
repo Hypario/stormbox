@@ -10,8 +10,6 @@ use App\AuthModule\Action\LoginTotpAction;
 use App\AuthModule\Action\LogoutAction;
 use App\AuthModule\Action\SignupAction;
 use App\AuthModule\Action\TotpAction;
-use App\AuthModule\Action\TotpBackupAction;
-use Framework\Auth\LoggedInMiddleware;
 use Framework\Module;
 use Framework\Renderer\RendererInterface;
 use Hypario\Router\Router;
@@ -22,9 +20,9 @@ class AuthModule extends Module
 
     const DEFINITIONS = __DIR__ . '/config/config.php';
 
-    const MIGRATIONS = __DIR__ . '/db/migrations';
+    const MIGRATIONS = __DIR__ . '/Database/migrations';
 
-    const SEEDS = __DIR__ . '/db/seeds';
+    const SEEDS = __DIR__ . '/Database/seeds';
 
     public function __construct(ContainerInterface $container, Router $router, RendererInterface $renderer)
     {

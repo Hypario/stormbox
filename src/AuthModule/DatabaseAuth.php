@@ -8,6 +8,7 @@ use Framework\Auth\Auth;
 use Framework\Auth\User;
 use Framework\Exception\NoRecordException;
 use Framework\Session\SessionInterface;
+use Psr\Container\ContainerInterface;
 
 class DatabaseAuth implements Auth
 {
@@ -26,10 +27,16 @@ class DatabaseAuth implements Auth
      */
     private ?User $user = null;
 
-    public function __construct(UserTable $userTable, SessionInterface $session)
+    /**
+     * @var ContainerInterface
+     */
+    private ContainerInterface $container;
+
+    public function __construct(UserTable $userTable, SessionInterface $session, ContainerInterface $container)
     {
         $this->userTable = $userTable;
         $this->session = $session;
+        $this->container = $container;
     }
 
     public function login(string $username, string $password): ?User
@@ -40,6 +47,15 @@ class DatabaseAuth implements Auth
 
         $user = $this->userTable->findBy('username', $username);
         if ($user && password_verify($password, $user->password)) {
+            // get password algorithm
+            $passwordAlgo = $this->container->get('password.algo');
+            if (password_needs_rehash($user->password, $passwordAlgo)) {
+                // rehash
+                $newHash = password_hash($password, $passwordAlgo);
+                // update user
+                $this->userTable->update($user->id, ["password" => $newHash]);
+                $user->password = $newHash;
+            }
             return $user;
         }
         return null;

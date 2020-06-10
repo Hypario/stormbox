@@ -32,7 +32,7 @@ class TotpBackupGenerator
         }
 
         $backupCodes = [];
-        $alphanumerical = "abcdefghijklmnopqrstuvwxyz0123456789";
+        $alphanumerical = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
         for ($i = 0; $i < 10; $i++) {
             $code = "";

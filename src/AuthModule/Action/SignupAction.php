@@ -15,6 +15,7 @@ use Framework\Renderer\RendererInterface;
 use Framework\Session\FlashService;
 use Framework\Validator\Validator;
 use Hypario\Router\Router;
+use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -43,13 +44,18 @@ class SignupAction extends Action
      * @var Router
      */
     private Router $router;
+    /**
+     * @var ContainerInterface
+     */
+    private ContainerInterface $container;
 
     public function __construct(
         RendererInterface $renderer,
         UserTable $userTable,
         DatabaseAuth $auth,
         FlashService $flashService,
-        Router $router
+        Router $router,
+        ContainerInterface $container
     )
     {
         $this->renderer = $renderer;
@@ -57,6 +63,7 @@ class SignupAction extends Action
         $this->auth = $auth;
         $this->flashService = $flashService;
         $this->router = $router;
+        $this->container = $container;
     }
 
     /**
@@ -75,7 +82,7 @@ class SignupAction extends Action
             $userParams = [
                 'username' => $params['username'],
                 'email' => $params['email'],
-                'password' => password_hash($params['password'], PASSWORD_ARGON2ID)
+                'password' => password_hash($params['password'], $this->container->get('password.algo'))
             ];
             $this->userTable->insert($userParams);
 
