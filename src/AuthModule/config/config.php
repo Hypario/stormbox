@@ -13,6 +13,8 @@ return [
     'auth.distotp' =>'/totp/remove',
     'auth.loginTotp' => '/login/totp',
 
+    'password.algo' => PASSWORD_ARGON2ID,
+
     ForbiddenMiddleware::class => object()->constructor(get('auth.login'))
 
 ];

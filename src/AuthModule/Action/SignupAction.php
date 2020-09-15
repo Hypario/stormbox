@@ -85,7 +85,7 @@ class SignupAction extends Action
             $userParams = [
                 'username' => $params['username'],
                 'email' => $params['email'],
-                'password' => password_hash($params['password'], PASSWORD_ARGON2ID),
+                'password' => password_hash($params['password'], $this->container->get('password.algo')),
                 'activation_code' => $code
             ];
 
