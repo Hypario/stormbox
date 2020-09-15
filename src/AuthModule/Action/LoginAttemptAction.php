@@ -5,6 +5,7 @@ namespace App\AuthModule\Action;
 
 
 use App\AuthModule\DatabaseAuth;
+use App\AuthModule\User;
 use App\Framework\Response\RedirectResponse;
 use Framework\Actions\{Action, RouterAwareAction};
 use Framework\Session\{FlashService, SessionInterface};
@@ -46,8 +47,9 @@ class LoginAttemptAction extends Action
     {
         $params = $this->getParams($request);
         if ($this->getValidator($params)->isValid()) {
+            /** @var User $user */
             $user = $this->auth->login($params['username'], $params['password']);
-            if ($user) {
+            if ($user && $user->validated) {
                 if (!is_null($user->totpKey)) {
                     $this->session->set('user_id', $user->id);
                     return new RedirectResponse($this->router->getPath('auth.loginTotp'));

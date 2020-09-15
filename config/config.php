@@ -23,6 +23,8 @@ return [
     'env' => 'dev',
     'views.path' => ROOT . '/views',
 
+    'domain' => "http://localhost:8000",
+
     'database.host' => 'localhost',
     'database.username' => 'root',
     'database.password' => 'root',

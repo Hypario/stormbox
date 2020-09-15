@@ -4,6 +4,7 @@
 namespace App\AuthModule;
 
 
+use App\AuthModule\Action\ActivateAction;
 use App\AuthModule\Action\LoginAction;
 use App\AuthModule\Action\LoginAttemptAction;
 use App\AuthModule\Action\LoginTotpAction;
@@ -36,6 +37,8 @@ class AuthModule extends Module
 
         $router->get($container->get('auth.register'), SignupAction::class, 'auth.register');
         $router->post($container->get('auth.register'), SignupAction::class);
+
+        $router->get($container->get('auth.activate'), ActivateAction::class, 'auth.activate');
 
         $router->get($container->get('auth.totp'), TotpAction::class, 'auth.totp');
         $router->post($container->get('auth.totp'), TotpAction::class);

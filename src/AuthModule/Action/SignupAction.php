@@ -15,6 +15,7 @@ use Framework\Renderer\RendererInterface;
 use Framework\Session\FlashService;
 use Framework\Validator\Validator;
 use Hypario\Router\Router;
+use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -23,6 +24,10 @@ class SignupAction extends Action
 
     protected $params = ['username', 'email', 'password', 'password_confirm'];
 
+    /**
+     * @var ContainerInterface
+     */
+    private ContainerInterface $container;
     /**
      * @var RendererInterface
      */
@@ -45,6 +50,7 @@ class SignupAction extends Action
     private Router $router;
 
     public function __construct(
+        ContainerInterface $container,
         RendererInterface $renderer,
         UserTable $userTable,
         DatabaseAuth $auth,
@@ -52,6 +58,7 @@ class SignupAction extends Action
         Router $router
     )
     {
+        $this->container = $container;
         $this->renderer = $renderer;
         $this->userTable = $userTable;
         $this->auth = $auth;
@@ -72,18 +79,32 @@ class SignupAction extends Action
         $validator = $this->getValidator($params);
 
         if ($validator->isValid()) {
+
+            $code = substr(md5(uniqid(rand(), true)), 16, 16);
+
             $userParams = [
                 'username' => $params['username'],
                 'email' => $params['email'],
-                'password' => password_hash($params['password'], PASSWORD_ARGON2ID)
+                'password' => password_hash($params['password'], PASSWORD_ARGON2ID),
+                'activation_code' => $code
             ];
-            $this->userTable->insert($userParams);
 
+            $this->userTable->insert($userParams);
+            /** @var User $user */
             $user = Hydrator::hydrate($userParams, User::class);
             $user->id = $this->userTable->getPdo()->lastInsertId();
-            $this->auth->setUser($user);
 
-            $this->flashService->success("Votre compte a bien été créée, vous êtes maintenant connecté.");
+            $transport = (new \Swift_SmtpTransport('localhost', 1025));
+            $mailer = new \Swift_Mailer($transport);
+
+            $message = (new \Swift_Message("Activate your Stormbox account"))
+                ->setFrom(["noreply@stormbox.com" => "Stormbox"])
+                ->setTo([$user->email => $user->username])
+                ->setBody("Activate your account now ! click the link here : " . $this->container->get('domain') . $this->router->getPath("auth.activate", ["code" => $code]));
+
+            $mailer->send($message);
+
+            $this->flashService->success("Votre compte a bien été créée, un email vous a été envoyé afin d'activer votre compte.");
             return new RedirectResponse('/');
         }
         $errors = $validator->getErrors();
