@@ -110,7 +110,7 @@ class SignupAction extends Action
         $errors = $validator->getErrors();
         return $this->renderer->render('@auth/register', [
             'errors' => $errors,
-            'users' => [
+            'user' => [
                 'username' => $params['username'],
                 'email' => $params['email']
             ]
